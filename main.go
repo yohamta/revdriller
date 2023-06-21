@@ -28,3 +28,8 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+func loadAssets() error {
+
+	return nil
+}

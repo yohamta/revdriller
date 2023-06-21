@@ -1,9 +1,19 @@
 package game
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"log"
+	"revdriller/sprites"
+	"sync"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type game struct {
 }
+
+var (
+	setupOnce sync.Once
+)
 
 var _ ebiten.Game = &game{}
 
@@ -23,5 +33,23 @@ func (*game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scree
 
 // Update implements ebiten.game.
 func (*game) Update() error {
+	setupOnce.Do(setup)
+
 	return nil
+}
+
+// setup loads assets and initializes the game.
+func setup() {
+	loadAssets()
+}
+
+// loadAssets loads all assets.
+func loadAssets() {
+	for _, fn := range []func() error{
+		sprites.Load,
+	} {
+		if err := fn(); err != nil {
+			log.Fatal(err)
+		}
+	}
 }

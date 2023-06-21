@@ -1,0 +1,17 @@
+{
+    "sprites": [
+        {
+            "file": "img/player.png",
+            "w": 64,
+            "h": 128
+        }
+    ],
+    "animations": [
+        {
+            "name": "player1_idle",
+            "file": "img/player.png",
+            "frames": ["1-5", "1"],
+            "flip": false
+        }
+    ]
+}
