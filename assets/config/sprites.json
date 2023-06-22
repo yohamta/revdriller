@@ -14,6 +14,16 @@
             "file": "img/title.png",
             "w": 200,
             "h": 200
+        },
+        {
+            "file": "img/blocks_32x32.png",
+            "w": 32,
+            "h": 32
+        },
+        {
+            "file": "img/blocks_64x32.png",
+            "w": 64,
+            "h": 32
         }
     ],
     "animations": [
@@ -27,6 +37,12 @@
             "name": "player1_drill",
             "file": "img/player.png",
             "frames": ["1-5", "2"],
+            "flip": false
+        },
+        {
+            "name": "needle",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1-4", "2"],
             "flip": false
         }
     ]

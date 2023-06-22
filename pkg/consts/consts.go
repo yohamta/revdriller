@@ -20,5 +20,5 @@ const (
 	PlayerHorizontalSpeed = .5
 
 	// StateDuration is the minimum duration of the state.
-	StateDuration = time.Second * 1
+	StateDuration = time.Millisecond * 300
 )
