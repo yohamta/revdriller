@@ -34,7 +34,7 @@ func newPlayer(ecs *ecs.ECS) {
 	animation.Animation = player.Animation()
 
 	// set player's size
-	components.Size.SetValue(entry, dmath.NewVec2(32, 32))
+	components.Size.SetValue(entry, dmath.NewVec2(16, 32))
 
 	// set player's position
 	transform.SetWorldPosition(
@@ -46,7 +46,7 @@ func newPlayer(ecs *ecs.ECS) {
 	collider.Hitboxes = player.Hitboxes()
 
 	// setup event
-	events.CollideWithBlockEvent.Subscribe(ecs.World, onCollideWithBlock)
+	events.CollideWithDrillEvent.Subscribe(ecs.World, onCollideWithBlock)
 }
 
 func updatePlayer(ecs *ecs.ECS) {
@@ -59,22 +59,16 @@ func updatePlayer(ecs *ecs.ECS) {
 		return
 	}
 
+	// get player's position and size
+	pos := transform.WorldPosition(entry)
+	size := components.Size.Get(entry)
+
 	// apply gravity
 	vel := components.Velocity.Get(entry)
 	vel.Y += consts.Gravity
 
-	// update position
-	pos := transform.WorldPosition(entry)
+	// update position with velocity
 	pos.Y += vel.Y
-	transform.SetWorldPosition(entry, pos)
-
-	// get size
-	size := components.Size.Get(entry)
-
-	// check if player is dead
-	if pos.Y-size.Y/2-consts.DeadBuffer > consts.Height {
-		components.Player.Get(entry).IsDead = true
-	}
 
 	// check player's key input
 	input := getInput(ecs)
@@ -85,16 +79,51 @@ func updatePlayer(ecs *ecs.ECS) {
 		updatePlayerState(entry, components.PlayerStateIdle)
 	}
 
+	// adjust player's position on bottom side
+	if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X, pos.Y+size.Y/2)); ok {
+		bp := transform.WorldPosition(block)
+		bs := components.Size.Get(block)
+		pos.Y = bp.Y - bs.Y/2 - size.Y/2
+		vel.Y = 0
+	}
+
+	// adjust player's position on top side
+	if block, ok := findBlockOn(ecs, pos); ok {
+		bp := transform.WorldPosition(block)
+		bs := components.Size.Get(block)
+		pos.Y = bp.Y + bs.Y/2 + size.Y/2
+	}
+
 	// move horizontally
 	if input.Left {
 		pos.X -= consts.PlayerJumpSpeed
 		pos.X = math.Max(pos.X, size.X/2)
-		transform.SetWorldPosition(entry, pos)
+
+		// adjust player's position on left side
+		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X-size.X/2, pos.Y)); ok {
+			bp := transform.WorldPosition(block)
+			bs := components.Size.Get(block)
+			pos.X = bp.X + bs.X/2 + size.X/2
+		}
 	}
+
 	if input.Right {
 		pos.X += consts.PlayerJumpSpeed
 		pos.X = math.Min(pos.X, consts.Width-size.X/2)
-		transform.SetWorldPosition(entry, pos)
+
+		// adjust player's position on right side
+		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X+size.X/2, pos.Y)); ok {
+			bp := transform.WorldPosition(block)
+			bs := components.Size.Get(block)
+			pos.X = bp.X - bs.X/2 - size.X/2
+		}
+	}
+
+	transform.SetWorldPosition(entry, pos)
+
+	// check if player is dead
+	if pos.Y-size.Y/2-consts.DeadBuffer > consts.Height {
+		components.Player.Get(entry).IsDead = true
 	}
 }
 
@@ -120,18 +149,22 @@ func updatePlayerState(entry *donburi.Entry, state components.PlayerState) {
 }
 
 // onCollideWithBlock is called when player collide with block
-func onCollideWithBlock(w donburi.World, e events.CollideWithBlock) {
+func onCollideWithBlock(w donburi.World, e events.CollideWithDrill) {
+	if !e.Block.Valid() {
+		return
+	}
+
 	entry := components.Player.MustFirst(e.ECS.World)
-	adjustPlayerPosition(e.ECS, entry, e.Block)
-
-	// set player's velocity to zero
-	vel := components.Velocity.Get(entry)
-	vel.Y = 0
-
 	player := components.Player.Get(entry)
 
-	// add damage to block
+	// set player's velocity to zero if player is moving upward
+	vel := components.Velocity.Get(entry)
+	if vel.Y < 0 {
+		vel.Y = 0
+	}
+
 	if player.State == components.PlayerStateDrill {
+		// add damage to block
 		block := components.Block.Get(e.Block)
 		block.Damage(player.Power)
 
@@ -139,35 +172,4 @@ func onCollideWithBlock(w donburi.World, e events.CollideWithBlock) {
 		animation := components.Animation.Get(e.Block)
 		animation.Animation = block.Animation()
 	}
-}
-
-func adjustPlayerPosition(ecs *ecs.ECS, playerEntry, blockEntry *donburi.Entry) {
-	bp := transform.WorldPosition(blockEntry)
-	bs := components.Size.Get(blockEntry)
-
-	bt := bp.Y - bs.Y/2
-	bl := bp.X - bs.X/2
-	br := bp.X + bs.X/2
-	bb := bp.Y + bs.Y/2
-
-	pp := transform.WorldPosition(playerEntry)
-	ps := components.Size.Get(playerEntry)
-
-	pt := pp.Y - ps.Y/2
-	pl := pp.X - ps.X/2
-	pr := pp.X + ps.X/2
-	pb := pp.Y + ps.Y/2
-
-	// TODO: maybe this can be simplified
-	if pt < bb && bb < pb && ((pl < bl && bl < pr) || (pl < br && br < pr)) {
-		pp.Y = bp.Y + ps.Y/2 + bs.Y/2
-	} else if pb > bt && bt > pt && ((pl < bl && bl < pr) || (pl < br && br < pr)) {
-		pp.Y = bp.Y - ps.Y/2 - bs.Y/2
-	} else if pl < br && br < pr && ((pt < bt && bt < pb) || (pt < bb && bb < pb)) {
-		pp.X = bp.X + ps.X/2 + bs.X/2
-	} else if pr > bl && bl > pl && ((pt < bt && bt < pb) || (pt < bb && bb < pb)) {
-		pp.X = bp.X - ps.X/2 - bs.X/2
-	}
-
-	transform.SetWorldPosition(playerEntry, pp)
 }

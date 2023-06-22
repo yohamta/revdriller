@@ -6,9 +6,9 @@ import (
 	"github.com/yohamta/donburi/features/events"
 )
 
-type CollideWithBlock struct {
+type CollideWithDrill struct {
 	ECS   *ecs.ECS
 	Block *donburi.Entry
 }
 
-var CollideWithBlockEvent = events.NewEventType[CollideWithBlock]()
+var CollideWithDrillEvent = events.NewEventType[CollideWithDrill]()

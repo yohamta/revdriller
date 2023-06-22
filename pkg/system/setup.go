@@ -13,17 +13,19 @@ func Setup(ecs *ecs.ECS) {
 	ecs.AddSystem(updateAnimation)
 	ecs.AddSystem(updateFragments)
 	ecs.AddSystem(updatePlayer)
-	ecs.AddSystem(updateGame)
-	ecs.AddSystem(checkCollisions)
 	ecs.AddSystem(updateBlocks)
+	ecs.AddSystem(updateStage)
+	ecs.AddSystem(updateGame)
+	ecs.AddSystem(checkDrillCollision)
 	ecs.AddSystem(processEvents)
 
 	// Add renderers.
-	ecs.AddRenderer(layers.Default, drawGame)
-	ecs.AddRenderer(layers.Blocks, drawAnimation)
-	ecs.AddRenderer(layers.Player, drawAnimation)
-	ecs.AddRenderer(layers.Fx, drawAnimation)
+	ecs.AddRenderer(layers.Blocks, drawAnimation(layers.Blocks))
+	ecs.AddRenderer(layers.Player, drawAnimation(layers.Player))
+	ecs.AddRenderer(layers.Fx, drawAnimation(layers.Fx))
+	ecs.AddRenderer(layers.System, drawAnimation(layers.System))
 	ecs.AddRenderer(layers.System, drawCollider)
+	ecs.AddRenderer(layers.System, drawGame)
 
 	// Add entities.
 	newGame(ecs)

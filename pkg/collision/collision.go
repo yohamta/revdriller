@@ -46,6 +46,17 @@ func Collide(c1, c2 Collider) bool {
 	return false
 }
 
+// Contain returns true if the collider contains the position.
+func Contain(c Collider, pos dmath.Vec2) bool {
+	for _, hb := range c.Hitboxes {
+		x0, x1, y0, y1 := Bounds(nil, c.Pos, c.Size, hb)
+		if x0 < pos.X && pos.X < x1 && y0 < pos.Y && pos.Y < y1 {
+			return true
+		}
+	}
+	return false
+}
+
 // collide returns true if two hitboxes collide.
 func collide(hb1 Hitbox, pos1, size1 dmath.Vec2, hb2 Hitbox, pos2, size2 dmath.Vec2) bool {
 	x0, x1, y0, y1 := Bounds(nil, pos1, size1, hb1)

@@ -20,7 +20,7 @@ func StartGame(ecs *ecs.ECS) {
 
 func newGame(ecs *ecs.ECS) {
 	_ = ecs.World.Entry(ecs.Create(
-		layers.Default,
+		layers.System,
 		components.Game,
 	))
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
+	dmath "github.com/yohamta/donburi/features/math"
 	"github.com/yohamta/donburi/features/transform"
 	"github.com/yohamta/donburi/filter"
 )
@@ -48,18 +49,20 @@ var (
 	))
 )
 
-func checkCollisions(ecs *ecs.ECS) {
+func checkDrillCollision(ecs *ecs.ECS) {
 	player, ok := components.Player.First(ecs.World)
 	if !ok {
 		return
 	}
-	collider := newCollider(player)
+	pos := transform.WorldPosition(player)
+	drillPos := dmath.NewVec2(pos.X, pos.Y-components.Size.Get(player).Y/2-1)
 	blockColliders.Each(ecs.World, func(entry *donburi.Entry) {
-		if collision.Collide(collider, newCollider(entry)) {
-			events.CollideWithBlockEvent.Publish(ecs.World, events.CollideWithBlock{
-				ECS:   ecs,
-				Block: entry,
-			})
+		if collision.Contain(newCollider(entry), drillPos) {
+			events.CollideWithDrillEvent.Publish(
+				ecs.World, events.CollideWithDrill{
+					ECS:   ecs,
+					Block: entry,
+				})
 		}
 	})
 }

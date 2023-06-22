@@ -12,7 +12,7 @@ import (
 	"github.com/yohamta/ganim8/v2"
 )
 
-// UpdateAnimation updates animation
+// updateAnimation updates animation
 func updateAnimation(ecs *ecs.ECS) {
 	components.Animation.Each(ecs.World, func(entry *donburi.Entry) {
 		a := components.Animation.Get(entry)
@@ -20,21 +20,20 @@ func updateAnimation(ecs *ecs.ECS) {
 	})
 }
 
-var (
-	animations = donburi.NewQuery(filter.Contains(
+// drawAnimation draws animation on specified layer
+func drawAnimation(layer ecs.LayerID) func(ecs *ecs.ECS, screen *ebiten.Image) {
+	animations := ecs.NewQuery(layer, filter.Contains(
 		components.Animation,
 		transform.Transform,
 	))
-)
+	return func(ecs *ecs.ECS, screen *ebiten.Image) {
+		animations.Each(ecs.World, func(entry *donburi.Entry) {
+			a := components.Animation.Get(entry)
+			pos := transform.WorldPosition(entry)
+			rot := transform.WorldRotation(entry)
+			rad := math.Pi * rot / 180
 
-// DrawAnimation draws animation
-func drawAnimation(ecs *ecs.ECS, screen *ebiten.Image) {
-	animations.Each(ecs.World, func(entry *donburi.Entry) {
-		a := components.Animation.Get(entry)
-		pos := transform.WorldPosition(entry)
-		rot := transform.WorldRotation(entry)
-		rad := math.Pi * rot / 180
-
-		ganim8.DrawAnime(screen, a.Animation, pos.X, pos.Y, rad, 1, 1, .5, .5)
-	})
+			ganim8.DrawAnime(screen, a.Animation, pos.X, pos.Y, rad, 1, 1, .5, .5)
+		})
+	}
 }

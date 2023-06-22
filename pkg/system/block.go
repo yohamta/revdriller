@@ -2,7 +2,9 @@ package system
 
 import (
 	"revdriller/assets"
+	"revdriller/pkg/collision"
 	"revdriller/pkg/components"
+	"revdriller/pkg/consts"
 	"revdriller/pkg/layers"
 
 	"github.com/yohamta/donburi"
@@ -57,17 +59,52 @@ func updateBlocks(ecs *ecs.ECS) {
 		pos.Y += vel.Y
 		transform.SetWorldPosition(entry, pos)
 
+		size := *components.Size.Get(entry)
+
 		if block.Durability <= 0 {
+			removeBlock(ecs, entry)
+		} else if pos.Y-size.Y/2 > consts.Height {
 			removeBlock(ecs, entry)
 		}
 	})
+
+	// adjust player's position after block movement
+	if player, ok := components.Player.First(ecs.World); ok {
+		pc := newCollider(player)
+
+		components.Block.Each(ecs.World, func(entry *donburi.Entry) {
+			bc := newCollider(entry)
+			if collision.Collide(bc, pc) {
+				pp := transform.WorldPosition(player)
+				ps := *components.Size.Get(player)
+				bp := transform.WorldPosition(entry)
+				bs := *components.Size.Get(entry)
+				pp.Y = bp.Y + bs.Y/2 + ps.Y/2
+				transform.SetWorldPosition(player, pp)
+			}
+		})
+	}
+}
+
+func findBlockOn(ecs *ecs.ECS, point dmath.Vec2) (*donburi.Entry, bool) {
+	// TODO: make it more efficient
+	var found *donburi.Entry
+	components.Block.Each(ecs.World, func(entry *donburi.Entry) {
+		if collision.Contain(newCollider(entry), point) {
+			found = entry
+		}
+	})
+	return found, found != nil
 }
 
 // removeBlock removes block from ecs
 func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
+	block := components.Block.Get(entry)
 	// create fragments
-	for i := 0; i < 5; i++ {
-		newFragment(ecs, transform.WorldPosition(entry))
+	if block.Durability <= 0 {
+		for i := 0; i < 5; i++ {
+			newFragment(ecs, transform.WorldPosition(entry))
+		}
 	}
 	entry.Remove()
 }

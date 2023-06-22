@@ -16,6 +16,9 @@ const (
 	// BlockHeight is the height of the block.
 	BlockHeight = 32
 
+	// BlockInterval is the interval of the block.
+	BlockInterval = time.Millisecond * 1200
+
 	// CollumnCount is the number of collumns.
 	CollumnCount = int(Width / BlockWidth)
 
