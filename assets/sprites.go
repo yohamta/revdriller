@@ -1,18 +1,17 @@
-package sprites
+package assets
 
 import (
 	"bytes"
 	"fmt"
 	"image"
 	_ "image/png"
-	"revdriller/assets"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/ganim8/v2"
 )
 
-type Config struct {
+type SpriteConfig struct {
 	Sprites    []Sprite    `json:"sprites"`
 	Animations []Animation `json:"animations"`
 }
@@ -26,24 +25,8 @@ type Sprite struct {
 type Animation struct {
 	File   string        `json:"file"`
 	Name   string        `json:"name"`
-	Frames []interface{} `json:"frame"`
+	Frames []interface{} `json:"frames"`
 	Flip   bool          `json:"flip"`
-}
-
-// Load loads all sprites.
-func Load() error {
-	cfg := &Config{}
-	assets.MustReadJSON("config/sprites.json", cfg)
-
-	// load sprites and animations
-	for _, fn := range []func(*Config){
-		loadSprites,
-		loadAnimations,
-	} {
-		fn(cfg)
-	}
-
-	return nil
 }
 
 var (
@@ -74,10 +57,10 @@ func GetAnimation(name string) *ganim8.Animation {
 }
 
 // loadSprites loads all sprites.
-func loadSprites(cfg *Config) {
+func loadSprites(cfg *SpriteConfig) {
 	for _, s := range cfg.Sprites {
 		// load image from file
-		b := assets.MustRead(s.File)
+		b := mustRead(s.File)
 		// convert to ebiten.Image
 		img := ebiten.NewImageFromImage(*decodeImage(&b))
 		// add image to the map
@@ -96,7 +79,7 @@ func loadSprites(cfg *Config) {
 }
 
 // loadAnimations loads all animations.
-func loadAnimations(cfg *Config) {
+func loadAnimations(cfg *SpriteConfig) {
 	for _, a := range cfg.Animations {
 		g, ok := grids[a.File]
 		if !ok {
@@ -117,7 +100,7 @@ func loadAnimations(cfg *Config) {
 		}
 
 		// create the animation
-		anim := ganim8.NewAnimation(spr, time.Millisecond*20)
+		anim := ganim8.NewAnimation(spr, time.Millisecond*60)
 		animations[a.Name] = anim
 	}
 }

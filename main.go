@@ -4,17 +4,13 @@ import (
 	"log"
 	"math/rand"
 	"revdriller/game"
+	"revdriller/pkg/consts"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 func init() { rand.Seed(time.Now().UnixNano()) }
-
-const (
-	widthInPixel  = 320
-	heightInPixel = 480
-)
 
 func main() {
 	ebiten.SetCursorShape(ebiten.CursorShapePointer)
@@ -23,13 +19,8 @@ func main() {
 
 	factor := ebiten.DeviceScaleFactor()
 
-	ebiten.SetWindowSize(int(widthInPixel*factor), int(heightInPixel*factor))
+	ebiten.SetWindowSize(int(consts.Width*factor), int(consts.Height*factor))
 	if err := ebiten.RunGame(game.New()); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func loadAssets() error {
-
-	return nil
 }
