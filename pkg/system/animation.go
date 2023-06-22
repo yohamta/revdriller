@@ -12,7 +12,7 @@ import (
 	"github.com/yohamta/ganim8/v2"
 )
 
-func UpdateAnimation(ecs *ecs.ECS) {
+func updateAnimation(ecs *ecs.ECS) {
 	components.Animation.Each(ecs.World, func(entry *donburi.Entry) {
 		a := components.Animation.Get(entry)
 		a.Animation.Update()
@@ -26,7 +26,7 @@ var (
 	))
 )
 
-func DrawAnimation(ecs *ecs.ECS, screen *ebiten.Image) {
+func drawAnimation(ecs *ecs.ECS, screen *ebiten.Image) {
 	animationQuery.Each(ecs.World, func(entry *donburi.Entry) {
 		a := components.Animation.Get(entry)
 		pos := transform.WorldPosition(entry)

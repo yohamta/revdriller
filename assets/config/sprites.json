@@ -4,6 +4,11 @@
             "file": "img/player.png",
             "w": 64,
             "h": 128
+        },
+        {
+            "file": "img/messages.png",
+            "w": 200,
+            "h": 64
         }
     ],
     "animations": [
@@ -11,6 +16,12 @@
             "name": "player1_idle",
             "file": "img/player.png",
             "frames": ["1-5", "1"],
+            "flip": false
+        },
+        {
+            "name": "player1_drill",
+            "file": "img/player.png",
+            "frames": ["1-5", "2"],
             "flip": false
         }
     ]

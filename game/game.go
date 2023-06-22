@@ -4,8 +4,6 @@ import (
 	"log"
 	"revdriller/assets"
 	"revdriller/pkg/components"
-	"revdriller/pkg/entity"
-	"revdriller/pkg/layers"
 	"revdriller/pkg/system"
 	"sync"
 
@@ -46,7 +44,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 	switch g.state {
 	case stateInit:
 		// Do nothing.
-	case stateStart:
+	case stateStart, stateGameover:
 		g.ecs.Draw(screen)
 	}
 }
@@ -84,19 +82,11 @@ func (g *game) checkGameOver() bool {
 
 // initStage initializes the stage.
 func (g *game) initStage() {
+	// Create a new ECS world.
 	g.ecs = ecs.NewECS(donburi.NewWorld())
 
-	// Add systems.
-	g.ecs.AddSystem(system.UpdateAnimation)
-	g.ecs.AddSystem(system.UpdatePlayer)
-	g.ecs.AddSystem(system.UpdateGame)
-
-	// Add renderers.
-	g.ecs.AddRenderer(layers.Player, system.DrawAnimation)
-
-	// Add entities.
-	entity.NewGame(g.ecs)
-	entity.NewPlayer(g.ecs)
+	// Setup systems.
+	system.Setup(g.ecs)
 
 	// Start the game.
 	g.state = stateStart
