@@ -11,18 +11,18 @@ import (
 	"github.com/yohamta/ganim8/v2"
 )
 
-type SpriteConfig struct {
-	Sprites    []Sprite    `json:"sprites"`
-	Animations []Animation `json:"animations"`
+type spriteConfig struct {
+	Sprites    []sprite    `json:"sprites"`
+	Animations []animation `json:"animations"`
 }
 
-type Sprite struct {
+type sprite struct {
 	File string `json:"file"`
 	W    int    `json:"w"`
 	H    int    `json:"h"`
 }
 
-type Animation struct {
+type animation struct {
 	File   string        `json:"file"`
 	Name   string        `json:"name"`
 	Frames []interface{} `json:"frames"`
@@ -57,7 +57,7 @@ func GetAnimation(name string) *ganim8.Animation {
 }
 
 // loadSprites loads all sprites.
-func loadSprites(cfg *SpriteConfig) {
+func loadSprites(cfg *spriteConfig) {
 	for _, s := range cfg.Sprites {
 		// load image from file
 		b := mustRead(s.File)
@@ -79,7 +79,7 @@ func loadSprites(cfg *SpriteConfig) {
 }
 
 // loadAnimations loads all animations.
-func loadAnimations(cfg *SpriteConfig) {
+func loadAnimations(cfg *spriteConfig) {
 	for _, a := range cfg.Animations {
 		g, ok := grids[a.File]
 		if !ok {

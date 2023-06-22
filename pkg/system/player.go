@@ -21,20 +21,29 @@ func newPlayer(ecs *ecs.ECS) {
 		components.Animation,
 		components.Velocity,
 		components.Size,
+		components.Collider,
 	))
 
+	// set player's initial state
 	player := components.Player.Get(entry)
 	player.AnimationName = "player1"
 	player.State = components.PlayerStateIdle
 
+	// set player's initial animation
 	animation := components.Animation.Get(entry)
 	animation.Animation = assets.GetAnimation(player.Animation())
 
+	// set player's size
 	components.Size.SetValue(entry, dmath.NewVec2(32, 32))
 
+	// set player's position
 	transform.SetWorldPosition(
 		entry, dmath.NewVec2(consts.Width/2, consts.Height/2),
 	)
+
+	// set player's collider
+	collider := components.Collider.Get(entry)
+	collider.Hitboxes = assets.GetHitboxes("player")
 }
 
 func updatePlayer(ecs *ecs.ECS) {
@@ -66,7 +75,7 @@ func updatePlayer(ecs *ecs.ECS) {
 
 	// check player's key input
 	input := getInput(ecs)
-	if input.ButtonA {
+	if input.ButtonA || input.Down {
 		vel.Y = -consts.PlayerSpeed
 		updatePlayerState(entry, components.PlayerStateDrill)
 	} else {

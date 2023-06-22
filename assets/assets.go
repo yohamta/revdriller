@@ -3,25 +3,29 @@ package assets
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
 )
 
 // Load loads all assets.
 func Load() error {
-	sprites := &SpriteConfig{}
-	mustReadJSON("config/sprites.json", sprites)
 
 	// Load sprites and animations.
-	for _, fn := range []func(*SpriteConfig){
-		loadSprites,
-		loadAnimations,
-	} {
-		fn(sprites)
-	}
+	sprites := &spriteConfig{}
+	mustReadJSON("config/sprites.json", sprites)
+
+	loadSprites(sprites)
+	loadAnimations(sprites)
+
+	// load hitboxes
+	hitboxes := &hitboxConfig{}
+	mustReadJSON("config/hitboxes.json", hitboxes)
+	println(fmt.Sprintf("%v", hitboxes))
+	loadHitboxes(hitboxes)
 
 	return nil
 }
 
-//go:embed *
+//go:embed img/*.png config/*.json
 var fs embed.FS
 
 func mustRead(name string) []byte {

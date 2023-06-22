@@ -16,6 +16,7 @@ func Setup(ecs *ecs.ECS) {
 	// Add renderers.
 	ecs.AddRenderer(layers.Default, drawGame)
 	ecs.AddRenderer(layers.Player, drawAnimation)
+	ecs.AddRenderer(layers.System, drawCollider)
 
 	// Add entities.
 	newGame(ecs)

@@ -1,6 +1,9 @@
 package consts
 
-import "time"
+import (
+	"image/color"
+	"time"
+)
 
 const (
 	// Width and Height are the width and height of the screen.
@@ -21,4 +24,12 @@ const (
 
 	// StateDuration is the minimum duration of the state.
 	StateDuration = time.Millisecond * 300
+
+	// DebugCollision is the flag to enable collision debug.
+	DebugCollision = true
+)
+
+var (
+	// ColliderColor is the color of the collider.
+	ColliderColor = color.RGBA{0xff, 0x00, 0x00, 0x60}
 )
