@@ -1,11 +1,18 @@
 package components
 
-import "github.com/yohamta/donburi"
+import (
+	"revdriller/assets"
+	"revdriller/pkg/collision"
+
+	"github.com/yohamta/donburi"
+	dmath "github.com/yohamta/donburi/features/math"
+	"github.com/yohamta/ganim8/v2"
+)
 
 type PlayerData struct {
-	AnimationName string
-	IsDead        bool
-	State         PlayerState
+	IsDead bool
+	State  PlayerState
+	Power  int
 }
 
 type PlayerState string
@@ -17,6 +24,17 @@ const (
 
 var Player = donburi.NewComponentType[PlayerData]()
 
-func (p *PlayerData) Animation() string {
-	return p.AnimationName + "_" + string(p.State)
+func (p *PlayerData) Animation() *ganim8.Animation {
+	return assets.GetAnimation("player1_" + string(p.State))
+}
+
+func (p *PlayerData) Hitboxes() []collision.Hitbox {
+	return assets.GetHitboxes("player_" + string(p.State))
+}
+
+func (p *PlayerData) Size() dmath.Vec2 {
+	if p.State == PlayerStateDrill {
+		return dmath.NewVec2(32, 64)
+	}
+	return dmath.NewVec2(32, 32)
 }

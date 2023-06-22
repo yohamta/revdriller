@@ -24,26 +24,68 @@
             "file": "img/blocks_64x32.png",
             "w": 64,
             "h": 32
+        },
+        {
+            "file": "img/fragments.png",
+            "w": 24,
+            "h": 24
         }
     ],
     "animations": [
         {
             "name": "player1_idle",
             "file": "img/player.png",
-            "frames": ["1-5", "1"],
-            "flip": false
+            "frames": ["1-5", "1"]
         },
         {
             "name": "player1_drill",
             "file": "img/player.png",
-            "frames": ["1-5", "2"],
-            "flip": false
+            "frames": ["1-5", "2"]
         },
         {
             "name": "needle",
             "file": "img/blocks_32x32.png",
-            "frames": ["1-4", "2"],
-            "flip": false
+            "frames": ["1-4", "2"]
+        },
+        {
+            "name": "block1_1",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1", "1"]
+        },
+        {
+            "name": "block1_2",
+            "file": "img/blocks_32x32.png",
+            "frames": ["2", "1"]
+        },
+        {
+            "name": "block1_3",
+            "file": "img/blocks_32x32.png",
+            "frames": ["3", "1"]
+        },
+        {
+            "name": "block1_4",
+            "file": "img/blocks_32x32.png",
+            "frames": ["4", "1"]
+        },
+        {
+            "name": "fragment_1",
+            "file": "img/fragments.png",
+            "frames" : ["1", "1"]
+        },
+        {
+            "name": "fragment_2",
+            "file": "img/fragments.png",
+            "frames" : ["2", "1"]
+        },
+        {
+            "name": "fragment_3",
+            "file": "img/fragments.png",
+            "frames" : ["3", "1"]
+        },
+        {
+            "name": "fragment_4",
+            "file": "img/fragments.png",
+            "frames" : ["4", "1"]
         }
     ]
 }

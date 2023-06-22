@@ -12,6 +12,7 @@ import (
 	"github.com/yohamta/ganim8/v2"
 )
 
+// UpdateAnimation updates animation
 func updateAnimation(ecs *ecs.ECS) {
 	components.Animation.Each(ecs.World, func(entry *donburi.Entry) {
 		a := components.Animation.Get(entry)
@@ -20,14 +21,15 @@ func updateAnimation(ecs *ecs.ECS) {
 }
 
 var (
-	animationQuery = donburi.NewQuery(filter.Contains(
+	animations = donburi.NewQuery(filter.Contains(
 		components.Animation,
 		transform.Transform,
 	))
 )
 
+// DrawAnimation draws animation
 func drawAnimation(ecs *ecs.ECS, screen *ebiten.Image) {
-	animationQuery.Each(ecs.World, func(entry *donburi.Entry) {
+	animations.Each(ecs.World, func(entry *donburi.Entry) {
 		a := components.Animation.Get(entry)
 		pos := transform.WorldPosition(entry)
 		rot := transform.WorldRotation(entry)

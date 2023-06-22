@@ -4,6 +4,7 @@ import (
 	"revdriller/pkg/collision"
 	"revdriller/pkg/components"
 	"revdriller/pkg/consts"
+	"revdriller/pkg/events"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -13,12 +14,15 @@ import (
 	"github.com/yohamta/donburi/filter"
 )
 
-var colliders = donburi.NewQuery(filter.Contains(
-	components.Collider,
-	transform.Transform,
-	components.Size,
-))
+var (
+	colliders = donburi.NewQuery(filter.Contains(
+		components.Collider,
+		transform.Transform,
+		components.Size,
+	))
+)
 
+// drawCollider draws collider for debug
 func drawCollider(ecs *ecs.ECS, screen *ebiten.Image) {
 	if consts.DebugCollision {
 		colliders.Each(ecs.World, func(entry *donburi.Entry) {
@@ -35,4 +39,35 @@ func drawCollider(ecs *ecs.ECS, screen *ebiten.Image) {
 			}
 		})
 	}
+}
+
+var (
+	blockColliders = donburi.NewQuery(filter.Contains(
+		components.Collider,
+		components.Block,
+	))
+)
+
+func checkCollisions(ecs *ecs.ECS) {
+	player, ok := components.Player.First(ecs.World)
+	if !ok {
+		return
+	}
+	collider := newCollider(player)
+	blockColliders.Each(ecs.World, func(entry *donburi.Entry) {
+		if collision.Collide(collider, newCollider(entry)) {
+			events.CollideWithBlockEvent.Publish(ecs.World, events.CollideWithBlock{
+				ECS:   ecs,
+				Block: entry,
+			})
+		}
+	})
+}
+
+func newCollider(entry *donburi.Entry) collision.Collider {
+	colliderData := components.Collider.Get(entry)
+	// TODO: add size data to the transform component
+	pos := transform.WorldPosition(entry)
+	size := *components.Size.Get(entry)
+	return collision.NewCollider(pos, size, colliderData.Hitboxes)
 }

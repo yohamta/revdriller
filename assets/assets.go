@@ -3,7 +3,6 @@ package assets
 import (
 	"embed"
 	"encoding/json"
-	"fmt"
 )
 
 // Load loads all assets.
@@ -19,7 +18,6 @@ func Load() error {
 	// load hitboxes
 	hitboxes := &hitboxConfig{}
 	mustReadJSON("config/hitboxes.json", hitboxes)
-	println(fmt.Sprintf("%v", hitboxes))
 	loadHitboxes(hitboxes)
 
 	return nil

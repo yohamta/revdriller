@@ -1,7 +1,13 @@
 {
     "hitboxes": {
-        "player": [
+        "player_idle": [
             [8, 0, 24, 32]
+        ],
+        "player_drill": [
+            [8, 0, 24, 46]
+        ],
+        "block": [
+            [4, 4, 28, 28]
         ]
     }
 }

@@ -10,17 +10,26 @@ const (
 	Width  = 240
 	Height = 320
 
+	// BlockWidth is the width of the block.
+	BlockWidth = 32
+
+	// BlockHeight is the height of the block.
+	BlockHeight = 32
+
+	// CollumnCount is the number of collumns.
+	CollumnCount = int(Width / BlockWidth)
+
 	// Gravity is the gravity of the game.
 	Gravity = 0.05
 
 	// DeadBuffer is the buffer for the player to be considered dead.
 	DeadBuffer = 60
 
-	// PlayerSpeed is the speed of the player.
-	PlayerSpeed = 2
+	// PlayerJumpSpeed is the jump speed of the player.
+	PlayerJumpSpeed = 2
 
-	// PlayerHorizontalSpeed is the horizontal speed of the player.
-	PlayerHorizontalSpeed = .5
+	// PlayerSpeed is the horizontal speed of the player.
+	PlayerSpeed = .5
 
 	// StateDuration is the minimum duration of the state.
 	StateDuration = time.Millisecond * 300

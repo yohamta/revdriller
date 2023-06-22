@@ -1,7 +1,6 @@
 package game
 
 import (
-	"log"
 	"revdriller/assets"
 	"revdriller/pkg/components"
 	"revdriller/pkg/consts"
@@ -40,12 +39,17 @@ const (
 func New() *game {
 	return &game{
 		state: stateInit,
+		ecs:   ecs.NewECS(donburi.NewWorld()),
 	}
 }
 
 // Draw implements ebiten.game.
 func (g *game) Draw(screen *ebiten.Image) {
 	screen.Clear()
+
+	if g.ecs == nil {
+		return
+	}
 
 	switch g.state {
 	case stateInit:
@@ -62,9 +66,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 // Layout implements ebiten.game.
 func (*game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
-	return 240, 320
-	// factor := ebiten.DeviceScaleFactor()
-	// return int(float64(outsideWidth) * factor), int(float64(outsideHeight) * factor)
+	return consts.Width, consts.Height
 }
 
 // Update implements ebiten.game.
@@ -151,7 +153,7 @@ func loadAssets() {
 		assets.Load,
 	} {
 		if err := fn(); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 	}
 }

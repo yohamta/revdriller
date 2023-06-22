@@ -53,7 +53,7 @@ func GetAnimation(name string) *ganim8.Animation {
 	if _, ok := animations[name]; !ok {
 		panic(fmt.Sprintf("animation not found: %s", name))
 	}
-	return animations[name]
+	return animations[name].Clone()
 }
 
 // loadSprites loads all sprites.

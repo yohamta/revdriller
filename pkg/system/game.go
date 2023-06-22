@@ -13,6 +13,8 @@ import (
 )
 
 func StartGame(ecs *ecs.ECS) {
+	newStage(ecs, 1)
+
 	getGame(ecs).IsGameStart = true
 }
 
