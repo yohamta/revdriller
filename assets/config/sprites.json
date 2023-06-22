@@ -9,6 +9,11 @@
             "file": "img/messages.png",
             "w": 200,
             "h": 64
+        },
+        {
+            "file": "img/title.png",
+            "w": 200,
+            "h": 200
         }
     ],
     "animations": [

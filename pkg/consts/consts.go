@@ -1,5 +1,7 @@
 package consts
 
+import "time"
+
 const (
 	// Width and Height are the width and height of the screen.
 	Width  = 240
@@ -16,4 +18,7 @@ const (
 
 	// PlayerHorizontalSpeed is the horizontal speed of the player.
 	PlayerHorizontalSpeed = .5
+
+	// StateDuration is the minimum duration of the state.
+	StateDuration = time.Second * 1
 )

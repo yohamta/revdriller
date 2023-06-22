@@ -4,17 +4,21 @@ import (
 	"log"
 	"revdriller/assets"
 	"revdriller/pkg/components"
+	"revdriller/pkg/consts"
 	"revdriller/pkg/system"
 	"sync"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
+	"github.com/yohamta/ganim8/v2"
 )
 
 type game struct {
-	state state
-	ecs   *ecs.ECS
+	state          state
+	ecs            *ecs.ECS
+	stateChangedAt time.Time
 }
 
 var (
@@ -28,7 +32,9 @@ type state int
 const (
 	stateInit state = iota
 	stateStart
+	statePlaying
 	stateGameover
+	stateGameclear
 )
 
 func New() *game {
@@ -44,8 +50,13 @@ func (g *game) Draw(screen *ebiten.Image) {
 	switch g.state {
 	case stateInit:
 		// Do nothing.
-	case stateStart, stateGameover:
+	case stateStart, statePlaying, stateGameover, stateGameclear:
 		g.ecs.Draw(screen)
+	}
+
+	if g.state == stateStart {
+		spr := assets.GetSprite("img/title.png")
+		ganim8.DrawSprite(screen, spr, 0, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
 	}
 }
 
@@ -65,19 +76,56 @@ func (g *game) Update() error {
 		g.initStage()
 	case stateStart:
 		g.ecs.Update()
+		if g.checkStart() && g.stateDuration() > consts.StateDuration {
+			system.StartGame(g.ecs)
+			g.changeState(statePlaying)
+		}
+	case statePlaying:
+		g.ecs.Update()
 		if g.checkGameOver() {
-			println("game over")
-			g.state = stateGameover
+			g.changeState(stateGameover)
+		}
+		if g.checkGameClear() {
+			g.changeState(stateGameclear)
+		}
+	case stateGameclear, stateGameover:
+		if g.checkRestart() {
+			g.changeState(stateInit)
 		}
 	}
 
 	return nil
 }
 
+func (g *game) stateDuration() time.Duration {
+	return time.Since(g.stateChangedAt)
+}
+
+func (g *game) changeState(state state) {
+	g.state = state
+	g.stateChangedAt = time.Now()
+}
+
+func (g *game) checkStart() bool {
+	return ebiten.IsKeyPressed(ebiten.KeySpace) || ebiten.IsKeyPressed(ebiten.KeyEnter) || ebiten.IsKeyPressed(ebiten.KeyZ)
+}
+
+func (g *game) checkRestart() bool {
+	if g.stateDuration() < consts.StateDuration {
+		return false
+	}
+	return ebiten.IsKeyPressed(ebiten.KeySpace) || ebiten.IsKeyPressed(ebiten.KeyEnter) || ebiten.IsKeyPressed(ebiten.KeyZ)
+}
+
 // checkGameOver checks if the game is over.
 func (g *game) checkGameOver() bool {
 	game := components.Game.MustFirst(g.ecs.World)
 	return components.Game.Get(game).IsGameOver
+}
+
+func (g *game) checkGameClear() bool {
+	game := components.Game.MustFirst(g.ecs.World)
+	return components.Game.Get(game).IsGameClear
 }
 
 // initStage initializes the stage.
@@ -89,7 +137,7 @@ func (g *game) initStage() {
 	system.Setup(g.ecs)
 
 	// Start the game.
-	g.state = stateStart
+	g.changeState(stateStart)
 }
 
 // setup loads assets and initializes the game.
