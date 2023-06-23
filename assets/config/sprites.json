@@ -68,6 +68,26 @@
             "frames": ["4", "1"]
         },
         {
+            "name": "block2_1",
+            "file": "img/blocks_64x32.png",
+            "frames": ["1", "1"]
+        },
+        {
+            "name": "block2_2",
+            "file": "img/blocks_64x32.png",
+            "frames": ["2", "1"]
+        },
+        {
+            "name": "block2_3",
+            "file": "img/blocks_64x32.png",
+            "frames": ["3", "1"]
+        },
+        {
+            "name": "block2_4",
+            "file": "img/blocks_64x32.png",
+            "frames": ["4", "1"]
+        },
+        {
             "name": "fragment_1",
             "file": "img/fragments.png",
             "frames" : ["1", "1"]

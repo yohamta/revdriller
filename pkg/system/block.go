@@ -1,7 +1,6 @@
 package system
 
 import (
-	"revdriller/assets"
 	"revdriller/pkg/collision"
 	"revdriller/pkg/components"
 	"revdriller/pkg/consts"
@@ -13,7 +12,7 @@ import (
 	"github.com/yohamta/donburi/features/transform"
 )
 
-func newBlock(ecs *ecs.ECS, pos dmath.Vec2, speed float64) {
+func newBlock(ecs *ecs.ECS, leftBottom dmath.Vec2, blockType components.BlockType, speed float64) *donburi.Entry {
 	entry := ecs.World.Entry(ecs.Create(
 		layers.Blocks,
 		transform.Transform,
@@ -26,6 +25,7 @@ func newBlock(ecs *ecs.ECS, pos dmath.Vec2, speed float64) {
 
 	// set blocks data
 	block := components.Block.Get(entry)
+	block.BlockType = blockType
 	block.MaxDurability = 10
 	block.Durability = block.MaxDurability
 
@@ -38,14 +38,19 @@ func newBlock(ecs *ecs.ECS, pos dmath.Vec2, speed float64) {
 	vel.Y = speed
 
 	// set block's size
-	components.Size.SetValue(entry, dmath.NewVec2(32, 32))
+	width := block.Width()
+	height := block.Height()
+	components.Size.SetValue(entry, dmath.NewVec2(width, height))
 
 	// set block's position
+	pos := dmath.NewVec2(leftBottom.X+width/2, leftBottom.Y-height/2)
 	transform.SetWorldPosition(entry, pos)
 
 	// set block's collider
 	collider := components.Collider.Get(entry)
-	collider.Hitboxes = assets.GetHitboxes("block")
+	collider.Hitboxes = block.Hitboxes()
+
+	return entry
 }
 
 func updateBlocks(ecs *ecs.ECS) {

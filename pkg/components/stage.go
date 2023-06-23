@@ -11,7 +11,7 @@ type StageData struct {
 	BlockSpeed    float64
 	BlockInterval time.Duration
 	Timer         time.Duration
-	Waves         int
+	BaseLine      float64
 }
 
 var Stage = donburi.NewComponentType[StageData]()

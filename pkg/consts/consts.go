@@ -19,9 +19,6 @@ const (
 	// BlockInterval is the interval of the block.
 	BlockInterval = time.Millisecond * 1200
 
-	// CollumnCount is the number of collumns.
-	CollumnCount = int(Width / BlockWidth)
-
 	// Gravity is the gravity of the game.
 	Gravity = 0.05
 
@@ -38,7 +35,7 @@ const (
 	StateDuration = time.Millisecond * 300
 
 	// DebugCollision is the flag to enable collision debug.
-	DebugCollision = true
+	DebugCollision = false
 )
 
 var (

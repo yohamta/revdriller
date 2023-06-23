@@ -50,7 +50,7 @@ func newPlayer(ecs *ecs.ECS) {
 }
 
 func updatePlayer(ecs *ecs.ECS) {
-	if !isGameStart(ecs) {
+	if !isGameStarted(ecs) {
 		return
 	}
 

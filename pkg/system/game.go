@@ -25,7 +25,7 @@ func newGame(ecs *ecs.ECS) {
 	))
 }
 
-func isGameStart(ecs *ecs.ECS) bool {
+func isGameStarted(ecs *ecs.ECS) bool {
 	return getGame(ecs).IsGameStart
 }
 
