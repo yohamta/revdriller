@@ -88,6 +88,36 @@
             "frames": ["4", "1"]
         },
         {
+            "name": "block2_4",
+            "file": "img/blocks_64x32.png",
+            "frames": ["4", "1"]
+        },
+        {
+            "name": "obstacle1_1",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1", "3"]
+        },
+        {
+            "name": "reverse_1",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1", "4"]
+        },
+        {
+            "name": "reverse_2",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1", "4"]
+        },
+        {
+            "name": "reverse_3",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1", "4"]
+        },
+        {
+            "name": "reverse_4",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1", "4"]
+        },
+        {
             "name": "fragment_1",
             "file": "img/fragments.png",
             "frames" : ["1", "1"]

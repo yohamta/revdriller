@@ -25,9 +25,7 @@ func newBlock(ecs *ecs.ECS, leftBottom dmath.Vec2, blockType components.BlockTyp
 
 	// set blocks data
 	block := components.Block.Get(entry)
-	block.BlockType = blockType
-	block.MaxDurability = 10
-	block.Durability = block.MaxDurability
+	block.Init(blockType)
 
 	// set block's animation
 	animation := components.Animation.Get(entry)
@@ -66,7 +64,7 @@ func updateBlocks(ecs *ecs.ECS) {
 
 		size := *components.Size.Get(entry)
 
-		if block.Durability <= 0 {
+		if block.IsBroken() {
 			removeBlock(ecs, entry)
 		} else if pos.Y-size.Y/2 > consts.Height {
 			removeBlock(ecs, entry)
@@ -106,7 +104,7 @@ func findBlockOn(ecs *ecs.ECS, point dmath.Vec2) (*donburi.Entry, bool) {
 func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 	block := components.Block.Get(entry)
 	// create fragments
-	if block.Durability <= 0 {
+	if block.IsBroken() {
 		for i := 0; i < 5; i++ {
 			newFragment(ecs, transform.WorldPosition(entry))
 		}
