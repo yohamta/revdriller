@@ -3,7 +3,6 @@ package system
 import (
 	"revdriller/pkg/collision"
 	"revdriller/pkg/components"
-	"revdriller/pkg/consts"
 	"revdriller/pkg/layers"
 
 	"github.com/yohamta/donburi"
@@ -62,11 +61,7 @@ func updateBlocks(ecs *ecs.ECS) {
 		pos.Y += vel.Y
 		transform.SetWorldPosition(entry, pos)
 
-		size := *components.Size.Get(entry)
-
 		if block.IsBroken() {
-			removeBlock(ecs, entry)
-		} else if pos.Y-size.Y/2 > consts.Height {
 			removeBlock(ecs, entry)
 		}
 	})

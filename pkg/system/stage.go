@@ -20,6 +20,7 @@ func newStage(ecs *ecs.ECS, level int) {
 	stage.BlockSpeed = 1 + float64(level)/10
 	stage.BlockInterval = consts.BlockInterval
 	stage.BaseLine = 0.0
+	stage.WaveCount = 30
 }
 
 func getStage(ecs *ecs.ECS) *components.StageData {
@@ -44,6 +45,9 @@ func updateStage(ecs *ecs.ECS) {
 	stage.BaseLine += stage.BlockSpeed
 	if stage.BaseLine >= 0 {
 		stage.BaseLine -= consts.BlockHeight
-		generateWave(ecs, stage, stage.BaseLine)
+		if stage.WaveCount > 0 {
+			stage.WaveCount--
+			generateWave(ecs, stage, stage.BaseLine)
+		}
 	}
 }

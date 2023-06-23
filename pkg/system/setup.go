@@ -29,6 +29,8 @@ func Setup(ecs *ecs.ECS) {
 
 	// Add entities.
 	newGame(ecs)
+	newStage(ecs, 1)
+	newReverse(ecs)
 	newInput(ecs)
 	newPlayer(ecs)
 }

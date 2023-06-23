@@ -21,10 +21,10 @@ var Block = donburi.NewComponentType[BlockData]()
 type BlockType string
 
 const (
-	Block1    = "block1"
-	Block2    = "block2"
-	Obstacle1 = "obstacle1"
-	Reverse   = "reverse"
+	NormalBlock1   = "block1"
+	NormalBlock2   = "block2"
+	ObstacleBlock1 = "obstacle1"
+	ReverseBlock   = "reverse"
 )
 
 func (b BlockType) String() string {
@@ -34,11 +34,11 @@ func (b BlockType) String() string {
 func (b *BlockData) Init(bt BlockType) {
 	b.BlockType = bt
 	switch bt {
-	case Block1, Block2:
+	case NormalBlock1, NormalBlock2:
 		b.MaxDurability = 10
-	case Obstacle1:
+	case ObstacleBlock1:
 		b.MaxDurability = -1
-	case Reverse:
+	case ReverseBlock:
 		b.MaxDurability = 1
 	}
 	b.Durability = b.MaxDurability
@@ -63,7 +63,7 @@ func (b *BlockData) IsBreakable() bool {
 
 func (b *BlockData) Width() float64 {
 	switch b.BlockType {
-	case Block2:
+	case NormalBlock2:
 		return 64
 	}
 	return 32
@@ -96,10 +96,10 @@ func (b *BlockData) Animation() *ganim8.Animation {
 func RandomBlockType() BlockType {
 	r := rand.Float64()
 	switch {
-	case r < 0.05:
-		return Reverse
 	case r < 0.1:
-		return Obstacle1
+		return ReverseBlock
+	case r < 0.3:
+		return ObstacleBlock1
 	}
 	return BlockType(fmt.Sprintf("block%d", rand.Intn(2)+1))
 }
