@@ -3,3 +3,6 @@
 
 # VSCode Settings
 .vscode
+
+# compiled binary
+./wasm/revdriller.wasm
