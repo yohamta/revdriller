@@ -28,6 +28,7 @@ const (
 	BlockTypeObstackle2 BlockType = "obstacle2"
 	BlockTypeReverse    BlockType = "reverse"
 	BlockTypeBomb       BlockType = "bomb"
+	BlockTypeNeedle     BlockType = "needle"
 )
 
 func (b BlockType) Reverse() BlockType {
@@ -63,7 +64,7 @@ func (b *BlockData) Init(bt BlockType) {
 	switch bt {
 	case BlockTypeNormal, BlockTypeNormal2:
 		b.MaxDurability = 30
-	case BlockTypeObstacle1, BlockTypeObstackle2:
+	case BlockTypeObstacle1, BlockTypeObstackle2, BlockTypeNeedle:
 		b.MaxDurability = -1
 	default:
 		b.MaxDurability = 10
@@ -118,7 +119,7 @@ func (b *BlockData) Animation() *ganim8.Animation {
 	r := float64(b.Durability) / float64(b.MaxDurability)
 
 	switch b.Type {
-	case BlockTypeReverse, BlockTypeBomb:
+	case BlockTypeReverse, BlockTypeBomb, BlockTypeNeedle:
 		return assets.GetAnimation(b.Type.String())
 	}
 
@@ -141,7 +142,7 @@ func RandomBlockType() BlockType {
 	switch {
 	case r < 0.1:
 		return BlockTypeReverse
-	case r < 0.3:
+	case r < 0.34:
 		return BlockType(fmt.Sprintf("obstacle%d", rand.Intn(2)+1))
 	}
 	return BlockType(fmt.Sprintf("block%d", rand.Intn(2)+1))

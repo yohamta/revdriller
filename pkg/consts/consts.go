@@ -22,6 +22,9 @@ const (
 	// BlockColumnNum is the number of columns of the block.
 	BlockColumnNum = 7
 
+	// Life is the number of life of the player.
+	Life = 3
+
 	// Margin is the gap of the edge.
 	Margin = (Width - BlockWidth*BlockColumnNum) / 2
 

@@ -68,59 +68,64 @@ func updatePlayer(ecs *ecs.ECS) {
 	// update position with velocity
 	pos.Y += vel.Y
 
-	// check player's key input
-	input := getInput(ecs)
-	if input.ButtonA || input.Down || input.Up {
-		vel.Y = -consts.PlayerJumpSpeed
-		updatePlayerState(entry, components.PlayerStateDrill)
-	} else {
-		updatePlayerState(entry, components.PlayerStateIdle)
-	}
+	player := components.Player.Get(entry)
 
-	// adjust player's position on bottom side
-	if vel.Y > 0 {
-		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X, pos.Y+size.Y/2)); ok {
-			bp := transform.WorldPosition(block)
-			bs := components.Size.Get(block)
-			pos.Y = bp.Y - bs.Y/2 - size.Y/2
-			vel.Y = 0
+	// if player is defunct, do nothing
+	if !player.IsDefunct() {
+		// check player's key input
+		input := getInput(ecs)
+		if input.ButtonA || input.Down || input.Up {
+			vel.Y = -consts.PlayerJumpSpeed
+			updatePlayerState(entry, components.PlayerStateDrill)
+		} else {
+			updatePlayerState(entry, components.PlayerStateIdle)
 		}
-	}
 
-	// adjust player's position on top side
-	if vel.Y < 0 {
-		if block, ok := findBlockOn(ecs, pos); ok {
-			bp := transform.WorldPosition(block)
-			bs := components.Size.Get(block)
-			pos.Y = bp.Y + bs.Y/2 + size.Y/2
-		}
-	}
-
-	// move horizontally
-	if input.Left {
-		pos.X -= consts.PlayerJumpSpeed
-		pos.X = math.Max(pos.X, size.X/2)
-
-		// adjust player's position on left side
-		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X-size.X/2, pos.Y)); ok {
-			bp := transform.WorldPosition(block)
-			bs := components.Size.Get(block)
-			if bp.X+bs.X/2 < consts.MaxX-size.X/2 {
-				pos.X = bp.X + bs.X/2 + size.X/2
+		// adjust player's position on bottom side
+		if vel.Y > 0 {
+			if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X, pos.Y+size.Y/2)); ok {
+				bp := transform.WorldPosition(block)
+				bs := components.Size.Get(block)
+				pos.Y = bp.Y - bs.Y/2 - size.Y/2
+				vel.Y = 0
 			}
 		}
-	}
 
-	if input.Right {
-		pos.X += consts.PlayerJumpSpeed
-		pos.X = math.Min(pos.X, consts.Width-size.X/2)
+		// adjust player's position on top side
+		if vel.Y < 0 {
+			if block, ok := findBlockOn(ecs, pos); ok {
+				bp := transform.WorldPosition(block)
+				bs := components.Size.Get(block)
+				pos.Y = bp.Y + bs.Y/2 + size.Y/2
+			}
+		}
 
-		// adjust player's position on right side
-		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X+size.X/2, pos.Y)); ok {
-			bp := transform.WorldPosition(block)
-			bs := components.Size.Get(block)
-			if bp.X-bs.X/2 > consts.MinX+size.X/2 {
-				pos.X = bp.X - bs.X/2 - size.X/2
+		// move horizontally
+		if input.Left {
+			pos.X -= consts.PlayerJumpSpeed
+			pos.X = math.Max(pos.X, size.X/2)
+
+			// adjust player's position on left side
+			if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X-size.X/2, pos.Y)); ok {
+				bp := transform.WorldPosition(block)
+				bs := components.Size.Get(block)
+				if bp.X+bs.X/2 < consts.MaxX-size.X/2 {
+					pos.X = bp.X + bs.X/2 + size.X/2
+				}
+			}
+		}
+
+		if input.Right {
+			pos.X += consts.PlayerJumpSpeed
+			pos.X = math.Min(pos.X, consts.Width-size.X/2)
+
+			// adjust player's position on right side
+			if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X+size.X/2, pos.Y)); ok {
+				bp := transform.WorldPosition(block)
+				bs := components.Size.Get(block)
+				if bp.X-bs.X/2 > consts.MinX+size.X/2 {
+					pos.X = bp.X - bs.X/2 - size.X/2
+				}
 			}
 		}
 	}
@@ -169,9 +174,16 @@ func onCollideWithBlock(w donburi.World, e events.CollideWithDrill) {
 		vel.Y = 0
 	}
 
+	block := components.Block.Get(e.Block)
+
+	// if the block is needle, player becomes defunct
+	if block.Type == components.BlockTypeNeedle {
+		updatePlayerState(entry, components.PlayerStateDefunct)
+		return
+	}
+
 	if player.State == components.PlayerStateDrill {
 		// add damage to block
-		block := components.Block.Get(e.Block)
 		block.Damage(player.Power)
 
 		// play sound

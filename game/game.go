@@ -11,13 +11,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
-	"github.com/yohamta/ganim8/v2"
 )
 
 type game struct {
 	state          state
 	ecs            *ecs.ECS
 	stateChangedAt time.Time
+	stage          int
+	life           int
 }
 
 var (
@@ -39,6 +40,8 @@ const (
 func New() *game {
 	return &game{
 		state: stateInit,
+		stage: 1,
+		life:  consts.Life,
 		ecs:   ecs.NewECS(donburi.NewWorld()),
 	}
 }
@@ -56,11 +59,6 @@ func (g *game) Draw(screen *ebiten.Image) {
 		// Do nothing.
 	case stateStart, statePlaying, stateGameover, stateGameclear:
 		g.ecs.Draw(screen)
-	}
-
-	if g.state == stateStart {
-		spr := assets.GetSprite("img/title.png")
-		ganim8.DrawSprite(screen, spr, 0, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
 	}
 }
 
@@ -104,6 +102,22 @@ func (g *game) stateDuration() time.Duration {
 }
 
 func (g *game) changeState(state state) {
+	if g.state == state {
+		return
+	}
+
+	switch state {
+	case stateStart:
+	case stateGameclear:
+		g.stage++
+	case stateGameover:
+		g.life--
+		if g.life <= 0 {
+			g.life = consts.Life
+			g.stage = 1
+		}
+	}
+
 	g.state = state
 	g.stateChangedAt = time.Now()
 }
@@ -122,12 +136,12 @@ func (g *game) checkRestart() bool {
 // checkGameOver checks if the game is over.
 func (g *game) checkGameOver() bool {
 	game := components.Game.MustFirst(g.ecs.World)
-	return components.Game.Get(game).IsGameOver
+	return components.Game.Get(game).IsDead
 }
 
 func (g *game) checkGameClear() bool {
 	game := components.Game.MustFirst(g.ecs.World)
-	return components.Game.Get(game).IsGameClear
+	return components.Game.Get(game).IsClear
 }
 
 // initStage initializes the stage.
@@ -136,7 +150,7 @@ func (g *game) initStage() {
 	g.ecs = ecs.NewECS(donburi.NewWorld())
 
 	// Setup systems.
-	system.Setup(g.ecs)
+	system.Setup(g.ecs, g.stage, g.life)
 
 	// Start the game.
 	g.changeState(stateStart)

@@ -18,8 +18,9 @@ type PlayerData struct {
 type PlayerState string
 
 const (
-	PlayerStateIdle  PlayerState = "idle"
-	PlayerStateDrill PlayerState = "drill"
+	PlayerStateIdle    PlayerState = "idle"
+	PlayerStateDrill   PlayerState = "drill"
+	PlayerStateDefunct PlayerState = "defunct"
 )
 
 var Player = donburi.NewComponentType[PlayerData]()
@@ -37,4 +38,8 @@ func (p *PlayerData) Size() dmath.Vec2 {
 		return dmath.NewVec2(32, 60)
 	}
 	return dmath.NewVec2(32, 24)
+}
+
+func (p *PlayerData) IsDefunct() bool {
+	return p.State == PlayerStateDefunct
 }

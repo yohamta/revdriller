@@ -39,7 +39,7 @@ func generateWave(ecs *ecs.ECS, stage *components.StageData, y float64) {
 	nextShouldReverse := shouldReverse
 	x := consts.Margin
 
-	// TODO: fix this ugly code
+	// Generate blocks with super ugly special recipe.
 	for i := 0; i < consts.BlockColumnNum; {
 		var blockType components.BlockType
 
@@ -56,6 +56,11 @@ func generateWave(ecs *ecs.ECS, stage *components.StageData, y float64) {
 			}
 		default:
 			blockType = components.RandomBlockType()
+			if blockType == components.BlockTypeObstacle1 {
+				if rand.Float64() < 0.3+float64(stage.Level)/20 {
+					blockType = components.BlockTypeNeedle
+				}
+			}
 		}
 
 		if i == consts.BlockColumnNum-1 {
@@ -72,7 +77,11 @@ func generateWave(ecs *ecs.ECS, stage *components.StageData, y float64) {
 		}
 
 		if math.Abs(float64(i)-float64(nextPath)) < 2 && rand.Float64() < .3 {
-			blockType = components.BlockTypeBomb
+			if rand.Float64() < .8 {
+				blockType = components.BlockTypeBomb
+			} else {
+				blockType = components.BlockTypeReverse
+			}
 		}
 
 		block := newBlock(ecs, dmath.NewVec2(float64(x), y),

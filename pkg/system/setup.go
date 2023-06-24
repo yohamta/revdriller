@@ -9,7 +9,7 @@ import (
 	pkgevents "revdriller/pkg/events"
 )
 
-func Setup(ecs *ecs.ECS) {
+func Setup(ecs *ecs.ECS, stage, life int) {
 	// Add systems.
 	ecs.AddSystem(updateInput)
 	ecs.AddSystem(updateAnimation)
@@ -31,9 +31,9 @@ func Setup(ecs *ecs.ECS) {
 	ecs.AddRenderer(layers.System, drawGame)
 
 	// Add entities.
-	newGame(ecs)
+	newGame(ecs, stage, life)
 	newBackground(ecs)
-	newStage(ecs, 1)
+	newStage(ecs, stage)
 	newReverse(ecs)
 	newInput(ecs)
 	newPlayer(ecs)

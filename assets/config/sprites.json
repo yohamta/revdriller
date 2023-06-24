@@ -16,6 +16,11 @@
             "h": 200
         },
         {
+            "file": "img/stage.png",
+            "w": 200,
+            "h": 200
+        },
+        {
             "file": "img/background.png",
             "w": 240,
             "h": 480
@@ -44,6 +49,11 @@
             "file": "img/items.png",
             "w": 32,
             "h": 32
+        },
+        {
+            "file": "img/numbers.png",
+            "w": 20,
+            "h": 50
         }
     ],
     "animations": [
@@ -61,6 +71,11 @@
             "name": "player1_drill",
             "file": "img/player.png",
             "frames": ["1-5", "2"]
+        },
+        {
+            "name": "player1_defunct",
+            "file": "img/player.png",
+            "frames": ["1-5", "3"]
         },
         {
             "name": "needle",
@@ -136,6 +151,11 @@
             "name": "bomb",
             "file": "img/items.png",
             "frames": ["1-5", "1"]
+        },
+        {
+            "name": "needle",
+            "file": "img/blocks_32x32.png",
+            "frames": ["1-4", "2"]
         },
         {
             "name": "fragment_1",

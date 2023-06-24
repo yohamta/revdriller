@@ -1,11 +1,21 @@
 package components
 
-import "github.com/yohamta/donburi"
+import (
+	"revdriller/pkg/consts"
+
+	"github.com/yohamta/donburi"
+)
 
 type GameData struct {
+	Stage       int
+	Life        int
 	IsGameStart bool
-	IsGameOver  bool
-	IsGameClear bool
+	IsDead      bool
+	IsClear     bool
 }
 
 var Game = donburi.NewComponentType[GameData]()
+
+func (g *GameData) IsFirstPlay() bool {
+	return g.Stage == 1 && g.Life == consts.Life
+}
