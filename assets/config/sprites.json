@@ -98,6 +98,11 @@
             "frames": ["1", "3"]
         },
         {
+            "name": "obstacle2_1",
+            "file": "img/blocks_64x32.png",
+            "frames": ["1", "2"]
+        },
+        {
             "name": "reverse_1",
             "file": "img/blocks_32x32.png",
             "frames": ["1", "4"]

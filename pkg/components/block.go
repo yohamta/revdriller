@@ -13,7 +13,7 @@ import (
 type BlockData struct {
 	Durability    int
 	MaxDurability int
-	BlockType     BlockType
+	Type          BlockType
 }
 
 var Block = donburi.NewComponentType[BlockData]()
@@ -21,24 +21,39 @@ var Block = donburi.NewComponentType[BlockData]()
 type BlockType string
 
 const (
-	NormalBlock1   = "block1"
-	NormalBlock2   = "block2"
-	ObstacleBlock1 = "obstacle1"
-	ReverseBlock   = "reverse"
+	BlockTypeNormal     = "block1"
+	BlockTypeNormal2    = "block2"
+	BlockTypeObstacle1  = "obstacle1"
+	BlockTypeObstackle2 = "obstacle2"
+	BlockTypeReverse    = "reverse"
 )
+
+func (b BlockType) Reverse() BlockType {
+	switch b {
+	case BlockTypeNormal:
+		return BlockTypeObstacle1
+	case BlockTypeNormal2:
+		return BlockTypeObstackle2
+	case BlockTypeObstacle1:
+		return BlockTypeNormal
+	case BlockTypeObstackle2:
+		return BlockTypeNormal2
+	}
+	return b // other blocks are not reversed
+}
 
 func (b BlockType) String() string {
 	return string(b)
 }
 
 func (b *BlockData) Init(bt BlockType) {
-	b.BlockType = bt
+	b.Type = bt
 	switch bt {
-	case NormalBlock1, NormalBlock2:
+	case BlockTypeNormal, BlockTypeNormal2:
 		b.MaxDurability = 10
-	case ObstacleBlock1:
+	case BlockTypeObstacle1, BlockTypeObstackle2:
 		b.MaxDurability = -1
-	case ReverseBlock:
+	case BlockTypeReverse:
 		b.MaxDurability = 1
 	}
 	b.Durability = b.MaxDurability
@@ -62,8 +77,8 @@ func (b *BlockData) IsBreakable() bool {
 }
 
 func (b *BlockData) Width() float64 {
-	switch b.BlockType {
-	case NormalBlock2:
+	switch b.Type {
+	case BlockTypeNormal2, BlockTypeObstackle2:
 		return 64
 	}
 	return 32
@@ -74,12 +89,12 @@ func (b *BlockData) Height() float64 {
 }
 
 func (b *BlockData) Hitboxes() []collision.Hitbox {
-	return assets.GetHitboxes(b.BlockType.String())
+	return assets.GetHitboxes(b.Type.String())
 }
 
 func (b *BlockData) Animation() *ganim8.Animation {
 	r := float64(b.Durability) / float64(b.MaxDurability)
-	prefix := b.BlockType.String()
+	prefix := b.Type.String()
 	switch {
 	case r > 0.75:
 		return assets.GetAnimation(prefix + "_1")
@@ -97,9 +112,9 @@ func RandomBlockType() BlockType {
 	r := rand.Float64()
 	switch {
 	case r < 0.1:
-		return ReverseBlock
-	case r < 0.3:
-		return ObstacleBlock1
+		return BlockTypeReverse
+	case r < 0.5:
+		return BlockType(fmt.Sprintf("obstacle%d", rand.Intn(2)+1))
 	}
 	return BlockType(fmt.Sprintf("block%d", rand.Intn(2)+1))
 }

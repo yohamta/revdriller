@@ -12,3 +12,9 @@ type CollideWithDrill struct {
 }
 
 var CollideWithDrillEvent = events.NewEventType[CollideWithDrill]()
+
+type ReverseBlockBroken struct {
+	ECS *ecs.ECS
+}
+
+var ReverseBlockBrokenEvent = events.NewEventType[ReverseBlockBroken]()

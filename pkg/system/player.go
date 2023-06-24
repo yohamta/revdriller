@@ -34,7 +34,7 @@ func newPlayer(ecs *ecs.ECS) {
 	animation.Animation = player.Animation()
 
 	// set player's size
-	components.Size.SetValue(entry, dmath.NewVec2(16, 32))
+	components.Size.SetValue(entry, dmath.NewVec2(16, 24))
 
 	// set player's position
 	transform.SetWorldPosition(
@@ -44,9 +44,6 @@ func newPlayer(ecs *ecs.ECS) {
 	// set player's collider
 	collider := components.Collider.Get(entry)
 	collider.Hitboxes = player.Hitboxes()
-
-	// setup event
-	events.CollideWithDrillEvent.Subscribe(ecs.World, onCollideWithBlock)
 }
 
 func updatePlayer(ecs *ecs.ECS) {
@@ -80,18 +77,22 @@ func updatePlayer(ecs *ecs.ECS) {
 	}
 
 	// adjust player's position on bottom side
-	if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X, pos.Y+size.Y/2)); ok {
-		bp := transform.WorldPosition(block)
-		bs := components.Size.Get(block)
-		pos.Y = bp.Y - bs.Y/2 - size.Y/2
-		vel.Y = 0
+	if vel.Y > 0 {
+		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X, pos.Y+size.Y/2)); ok {
+			bp := transform.WorldPosition(block)
+			bs := components.Size.Get(block)
+			pos.Y = bp.Y - bs.Y/2 - size.Y/2
+			vel.Y = 0
+		}
 	}
 
 	// adjust player's position on top side
-	if block, ok := findBlockOn(ecs, pos); ok {
-		bp := transform.WorldPosition(block)
-		bs := components.Size.Get(block)
-		pos.Y = bp.Y + bs.Y/2 + size.Y/2
+	if vel.Y < 0 {
+		if block, ok := findBlockOn(ecs, pos); ok {
+			bp := transform.WorldPosition(block)
+			bs := components.Size.Get(block)
+			pos.Y = bp.Y + bs.Y/2 + size.Y/2
+		}
 	}
 
 	// move horizontally

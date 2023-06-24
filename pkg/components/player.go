@@ -34,7 +34,7 @@ func (p *PlayerData) Hitboxes() []collision.Hitbox {
 
 func (p *PlayerData) Size() dmath.Vec2 {
 	if p.State == PlayerStateDrill {
-		return dmath.NewVec2(32, 64)
+		return dmath.NewVec2(32, 60)
 	}
-	return dmath.NewVec2(32, 32)
+	return dmath.NewVec2(32, 24)
 }

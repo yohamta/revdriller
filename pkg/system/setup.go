@@ -5,6 +5,8 @@ import (
 
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/features/events"
+
+	pkgevents "revdriller/pkg/events"
 )
 
 func Setup(ecs *ecs.ECS) {
@@ -33,6 +35,10 @@ func Setup(ecs *ecs.ECS) {
 	newReverse(ecs)
 	newInput(ecs)
 	newPlayer(ecs)
+
+	// Subscribe events.
+	pkgevents.CollideWithDrillEvent.Subscribe(ecs.World, onCollideWithBlock)
+	pkgevents.ReverseBlockBrokenEvent.Subscribe(ecs.World, reverseBlocks)
 }
 
 func processEvents(ecs *ecs.ECS) {

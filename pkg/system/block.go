@@ -1,8 +1,10 @@
 package system
 
 import (
+	"math"
 	"revdriller/pkg/collision"
 	"revdriller/pkg/components"
+	"revdriller/pkg/events"
 	"revdriller/pkg/layers"
 
 	"github.com/yohamta/donburi"
@@ -50,6 +52,19 @@ func newBlock(ecs *ecs.ECS, leftBottom dmath.Vec2, blockType components.BlockTyp
 	return entry
 }
 
+func reverseBlocks(w donburi.World, e events.ReverseBlockBroken) {
+	components.Block.Each(w, func(entry *donburi.Entry) {
+		block := components.Block.Get(entry)
+
+		// change block type
+		block.Init(block.Type.Reverse())
+
+		// set block's animation
+		animation := components.Animation.Get(entry)
+		animation.Animation = block.Animation()
+	})
+}
+
 func updateBlocks(ecs *ecs.ECS) {
 	components.Block.Each(ecs.World, func(entry *donburi.Entry) {
 		block := components.Block.Get(entry)
@@ -65,31 +80,19 @@ func updateBlocks(ecs *ecs.ECS) {
 			removeBlock(ecs, entry)
 		}
 	})
-
-	// adjust player's position after block movement
-	if player, ok := components.Player.First(ecs.World); ok {
-		pc := newCollider(player)
-
-		components.Block.Each(ecs.World, func(entry *donburi.Entry) {
-			bc := newCollider(entry)
-			if collision.Collide(bc, pc) {
-				pp := transform.WorldPosition(player)
-				ps := *components.Size.Get(player)
-				bp := transform.WorldPosition(entry)
-				bs := *components.Size.Get(entry)
-				pp.Y = bp.Y + bs.Y/2 + ps.Y/2
-				transform.SetWorldPosition(player, pp)
-			}
-		})
-	}
 }
 
 func findBlockOn(ecs *ecs.ECS, point dmath.Vec2) (*donburi.Entry, bool) {
 	// TODO: make it more efficient
 	var found *donburi.Entry
+	var distance float64 = math.MaxFloat64
 	components.Block.Each(ecs.World, func(entry *donburi.Entry) {
 		if collision.Contain(newCollider(entry), point) {
-			found = entry
+			pos := transform.WorldPosition(entry)
+			if tmp := pos.Distance(point); tmp < distance {
+				distance = tmp
+				found = entry
+			}
 		}
 	})
 	return found, found != nil
@@ -103,6 +106,12 @@ func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 		for i := 0; i < 5; i++ {
 			newFragment(ecs, transform.WorldPosition(entry))
 		}
+
+		// publish reverse block broken event
+		if block.Type == components.BlockTypeReverse {
+			events.ReverseBlockBrokenEvent.Publish(ecs.World, events.ReverseBlockBroken{ECS: ecs})
+		}
 	}
+
 	entry.Remove()
 }
