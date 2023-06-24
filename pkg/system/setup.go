@@ -9,7 +9,7 @@ import (
 	pkgevents "revdriller/pkg/events"
 )
 
-func Setup(ecs *ecs.ECS, stage, life int) {
+func Setup(ecs *ecs.ECS, stage, life, score int) {
 	// Add systems.
 	ecs.AddSystem(updateInput)
 	ecs.AddSystem(updateAnimation)
@@ -17,7 +17,6 @@ func Setup(ecs *ecs.ECS, stage, life int) {
 	ecs.AddSystem(updatePlayer)
 	ecs.AddSystem(updateBlocks)
 	ecs.AddSystem(updateEffects)
-	ecs.AddSystem(updateStage)
 	ecs.AddSystem(updateGame)
 	ecs.AddSystem(checkDrillCollision)
 	ecs.AddSystem(processEvents)
@@ -32,7 +31,7 @@ func Setup(ecs *ecs.ECS, stage, life int) {
 	ecs.AddRenderer(layers.System, drawGame)
 
 	// Add entities.
-	newGame(ecs, stage, life)
+	newGame(ecs, stage, life, score)
 	newBackground(ecs)
 	newStage(ecs, stage)
 	newReverse(ecs)
@@ -42,7 +41,6 @@ func Setup(ecs *ecs.ECS, stage, life int) {
 	// Subscribe events.
 	pkgevents.CollideWithDrillEvent.Subscribe(ecs.World, onCollideWithBlock)
 	pkgevents.ReverseBlockBrokenEvent.Subscribe(ecs.World, reverseBlocks)
-	pkgevents.ReverseBlockBrokenEvent.Subscribe(ecs.World, onReversed)
 	pkgevents.BombBlockBrokenEvent.Subscribe(ecs.World, bombBlock)
 }
 

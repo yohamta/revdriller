@@ -78,6 +78,9 @@ func reverseBlocks(w donburi.World, e events.ReverseBlockBroken) {
 }
 
 func updateBlocks(ecs *ecs.ECS) {
+	if !isGameStarted(ecs) {
+		return
+	}
 	components.Block.Each(ecs.World, func(entry *donburi.Entry) {
 		block := components.Block.Get(entry)
 
@@ -89,6 +92,11 @@ func updateBlocks(ecs *ecs.ECS) {
 		transform.SetWorldPosition(entry, pos)
 
 		if block.IsBroken() {
+			removeBlock(ecs, entry)
+		}
+
+		// remove block if it is out of screen
+		if pos.Y-block.Height()/2 > consts.Height {
 			removeBlock(ecs, entry)
 		}
 	})
@@ -155,6 +163,10 @@ func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 				ECS: ecs, Point: transform.WorldPosition(entry),
 			})
 		}
+
+		// add score
+		game := getGame(ecs)
+		game.AddScore += block.Score
 	}
 
 	transform.RemoveRecursive(entry)

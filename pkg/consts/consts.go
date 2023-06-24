@@ -17,7 +17,7 @@ const (
 	BlockHeight = 32
 
 	// BlockSpeed is the speed of the block.
-	BlockSpeed = 0.7
+	BlockSpeed = 0.65
 
 	// BlockColumnNum is the number of columns of the block.
 	BlockColumnNum = 7

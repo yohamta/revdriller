@@ -17,6 +17,7 @@ type game struct {
 	state          state
 	ecs            *ecs.ECS
 	stateChangedAt time.Time
+	score          int
 	stage          int
 	life           int
 }
@@ -41,6 +42,7 @@ func New() *game {
 	return &game{
 		state: stateInit,
 		stage: 1,
+		score: 0,
 		life:  consts.Life,
 		ecs:   ecs.NewECS(donburi.NewWorld()),
 	}
@@ -109,17 +111,23 @@ func (g *game) changeState(state state) {
 	switch state {
 	case stateStart:
 	case stateGameclear:
+		g.score += components.Game.Get(components.Game.MustFirst(g.ecs.World)).AddScore
 		g.stage++
 	case stateGameover:
 		g.life--
 		if g.life <= 0 {
-			g.life = consts.Life
-			g.stage = 1
+			g.reset()
 		}
 	}
 
 	g.state = state
 	g.stateChangedAt = time.Now()
+}
+
+func (g *game) reset() {
+	g.life = consts.Life
+	g.stage = 1
+	g.score = 0
 }
 
 func (g *game) checkStart() bool {
@@ -150,7 +158,7 @@ func (g *game) initStage() {
 	g.ecs = ecs.NewECS(donburi.NewWorld())
 
 	// Setup systems.
-	system.Setup(g.ecs, g.stage, g.life)
+	system.Setup(g.ecs, g.stage, g.life, g.score)
 
 	// Start the game.
 	g.changeState(stateStart)

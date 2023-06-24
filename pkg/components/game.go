@@ -8,6 +8,8 @@ import (
 
 type GameData struct {
 	Stage       int
+	Score       int
+	AddScore    int
 	Life        int
 	IsGameStart bool
 	IsDead      bool

@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"revdriller/assets"
 	"revdriller/pkg/collision"
+	"revdriller/pkg/consts"
 
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/ganim8/v2"
@@ -15,6 +16,7 @@ type BlockData struct {
 	Durability    int
 	MaxDurability int
 	Invalidated   bool
+	Score         int
 }
 
 var Block = donburi.NewComponentType[BlockData]()
@@ -55,6 +57,10 @@ func (b BlockType) Shorten() BlockType {
 	return b
 }
 
+func (b BlockType) IsLong() bool {
+	return b == BlockTypeNormal2 || b == BlockTypeObstackle2
+}
+
 func (b BlockType) String() string {
 	return string(b)
 }
@@ -63,7 +69,7 @@ func (b *BlockData) Init(bt BlockType) {
 	b.Type = bt
 	switch bt {
 	case BlockTypeNormal, BlockTypeNormal2:
-		b.MaxDurability = 30
+		b.MaxDurability = 20
 	case BlockTypeObstacle1, BlockTypeObstackle2, BlockTypeNeedle:
 		b.MaxDurability = -1
 	default:
@@ -107,13 +113,13 @@ func (b *BlockData) IsItem() bool {
 func (b *BlockData) Width() float64 {
 	switch b.Type {
 	case BlockTypeNormal2, BlockTypeObstackle2:
-		return 64
+		return consts.BlockWidth * 2
 	}
-	return 32
+	return consts.BlockWidth
 }
 
 func (b *BlockData) Height() float64 {
-	return 32
+	return consts.BlockHeight
 }
 
 func (b *BlockData) Hitboxes() []collision.Hitbox {
@@ -145,9 +151,13 @@ func (b *BlockData) Animation() *ganim8.Animation {
 func RandomBlockType() BlockType {
 	r := rand.Float64()
 	switch {
-	case r < 0.1:
+	case r < 0.05:
 		return BlockTypeReverse
-	case r < 0.34:
+	case r < 0.2:
+		return BlockTypeBomb
+	case r < 0.3:
+		return BlockType("needle")
+	case r < 0.7:
 		return BlockType(fmt.Sprintf("obstacle%d", rand.Intn(2)+1))
 	}
 	return BlockType(fmt.Sprintf("block%d", rand.Intn(2)+1))

@@ -61,9 +61,19 @@
             "h": 50
         },
         {
+            "file": "img/numbers_small.png",
+            "w": 10,
+            "h": 26
+        },
+        {
             "file": "img/explosion.png",
             "w": 64,
             "h": 64
+        },
+        {
+            "file": "img/highscore.png",
+            "w": 120,
+            "h": 28
         }
     ],
     "animations": [

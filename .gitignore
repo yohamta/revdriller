@@ -5,4 +5,5 @@
 .vscode
 
 # compiled binary
-./wasm/revdriller.wasm
+wasm/revdriller.wasm
+revdriller.zip
