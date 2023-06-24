@@ -64,6 +64,16 @@ func reverseBlocks(w donburi.World, e events.ReverseBlockBroken) {
 		// set block's animation
 		animation := components.Animation.Get(entry)
 		animation.Animation = block.Animation()
+
+		// generate effect
+		if block.IsReversible() {
+			if block.Width() == consts.BlockWidth*2 {
+				newEffect(e.ECS, entry, "reverse_effect", dmath.NewVec2(-consts.BlockWidth/2, 0))
+				newEffect(e.ECS, entry, "reverse_effect", dmath.NewVec2(+consts.BlockWidth/2, 0))
+			} else {
+				newEffect(e.ECS, entry, "reverse_effect", dmath.NewVec2(0, 0))
+			}
+		}
 	})
 }
 
@@ -109,7 +119,13 @@ func bombBlock(w donburi.World, e events.BombBlockBroken) {
 			components.Block.Each(w, func(entry *donburi.Entry) {
 				if collision.Contain(newCollider(entry), dmath.NewVec2(x, y)) {
 					block := components.Block.Get(entry)
+
+					// remove block
 					block.ForceBreak()
+
+					// generate explosion effect
+					pos := transform.WorldPosition(entry)
+					newEffect(e.ECS, nil, "explosion_effect", pos)
 				}
 			})
 		}
@@ -141,5 +157,5 @@ func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 		}
 	}
 
-	entry.Remove()
+	transform.RemoveRecursive(entry)
 }

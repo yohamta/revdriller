@@ -95,6 +95,11 @@ func (b *BlockData) IsBreakable() bool {
 	return b.MaxDurability >= 0
 }
 
+func (b *BlockData) IsReversible() bool {
+	return b.Type == BlockTypeNormal || b.Type == BlockTypeNormal2 ||
+		b.Type == BlockTypeObstacle1 || b.Type == BlockTypeObstackle2
+}
+
 func (b *BlockData) IsItem() bool {
 	return b.Type == BlockTypeReverse || b.Type == BlockTypeBomb
 }

@@ -36,6 +36,11 @@
             "h": 32
         },
         {
+            "file": "img/rev_effect.png",
+            "w": 32,
+            "h": 32
+        },
+        {
             "file": "img/fragments.png",
             "w": 24,
             "h": 24
@@ -54,6 +59,11 @@
             "file": "img/numbers.png",
             "w": 20,
             "h": 50
+        },
+        {
+            "file": "img/explosion.png",
+            "w": 64,
+            "h": 64
         }
     ],
     "animations": [
@@ -148,9 +158,19 @@
             "frames": ["1", "4"]
         },
         {
+            "name": "reverse_effect",
+            "file": "img/rev_effect.png",
+            "frames": ["1-5", "1"]
+        },
+        {
             "name": "bomb",
             "file": "img/items.png",
             "frames": ["1-5", "1"]
+        },
+        {
+            "name": "explosion_effect",
+            "file": "img/explosion.png",
+            "frames": ["1-8", "1"]
         },
         {
             "name": "needle",

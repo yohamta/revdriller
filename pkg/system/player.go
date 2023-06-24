@@ -84,6 +84,10 @@ func updatePlayer(ecs *ecs.ECS) {
 		// adjust player's position on bottom side
 		if vel.Y > 0 {
 			if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X, pos.Y+size.Y/2)); ok {
+				if components.Block.Get(block).Type == components.BlockTypeNeedle {
+					defunctPlayer(ecs)
+				}
+
 				bp := transform.WorldPosition(block)
 				bs := components.Size.Get(block)
 				pos.Y = bp.Y - bs.Y/2 - size.Y/2
@@ -94,6 +98,10 @@ func updatePlayer(ecs *ecs.ECS) {
 		// adjust player's position on top side
 		if vel.Y < 0 {
 			if block, ok := findBlockOn(ecs, pos); ok {
+				if components.Block.Get(block).Type == components.BlockTypeNeedle {
+					defunctPlayer(ecs)
+				}
+
 				bp := transform.WorldPosition(block)
 				bs := components.Size.Get(block)
 				pos.Y = bp.Y + bs.Y/2 + size.Y/2
@@ -107,6 +115,10 @@ func updatePlayer(ecs *ecs.ECS) {
 
 			// adjust player's position on left side
 			if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X-size.X/2, pos.Y)); ok {
+				if components.Block.Get(block).Type == components.BlockTypeNeedle {
+					defunctPlayer(ecs)
+				}
+
 				bp := transform.WorldPosition(block)
 				bs := components.Size.Get(block)
 				if bp.X+bs.X/2 < consts.MaxX-size.X/2 {
@@ -121,6 +133,10 @@ func updatePlayer(ecs *ecs.ECS) {
 
 			// adjust player's position on right side
 			if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X+size.X/2, pos.Y)); ok {
+				if components.Block.Get(block).Type == components.BlockTypeNeedle {
+					defunctPlayer(ecs)
+				}
+
 				bp := transform.WorldPosition(block)
 				bs := components.Size.Get(block)
 				if bp.X-bs.X/2 > consts.MinX+size.X/2 {
@@ -136,6 +152,15 @@ func updatePlayer(ecs *ecs.ECS) {
 	if pos.Y-size.Y/2-consts.DeadBuffer > consts.Height {
 		components.Player.Get(entry).IsDead = true
 	}
+}
+
+func defunctPlayer(ecs *ecs.ECS) {
+	entry, ok := components.Player.First(ecs.World)
+	if !ok {
+		return
+	}
+
+	updatePlayerState(entry, components.PlayerStateDefunct)
 }
 
 func updatePlayerState(entry *donburi.Entry, state components.PlayerState) {
@@ -178,7 +203,7 @@ func onCollideWithBlock(w donburi.World, e events.CollideWithDrill) {
 
 	// if the block is needle, player becomes defunct
 	if block.Type == components.BlockTypeNeedle {
-		updatePlayerState(entry, components.PlayerStateDefunct)
+		defunctPlayer(e.ECS)
 		return
 	}
 

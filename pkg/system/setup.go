@@ -16,6 +16,7 @@ func Setup(ecs *ecs.ECS, stage, life int) {
 	ecs.AddSystem(updateFragments)
 	ecs.AddSystem(updatePlayer)
 	ecs.AddSystem(updateBlocks)
+	ecs.AddSystem(updateEffects)
 	ecs.AddSystem(updateStage)
 	ecs.AddSystem(updateGame)
 	ecs.AddSystem(checkDrillCollision)
