@@ -12,7 +12,6 @@ type StageData struct {
 	Timer         time.Duration
 	BaseLine      float64
 	WaveCount     int
-	ColumnCount   int
 	PathColumn    int
 	ShouldReverse bool
 	Reversed      bool

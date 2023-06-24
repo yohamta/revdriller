@@ -106,7 +106,6 @@ func bombBlock(w donburi.World, e events.BombBlockBroken) {
 		x := e.Point.X - 2*consts.BlockWidth + float64(i)*consts.BlockWidth
 		for j := 0; j < 5; j++ {
 			y := e.Point.Y - 2*consts.BlockHeight + float64(j)*consts.BlockHeight
-			// TODO: make it more efficient
 			components.Block.Each(w, func(entry *donburi.Entry) {
 				if collision.Contain(newCollider(entry), dmath.NewVec2(x, y)) {
 					block := components.Block.Get(entry)
@@ -122,8 +121,8 @@ func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 	block := components.Block.Get(entry)
 	// create fragments
 	if block.IsBroken() {
-		for i := 0; i < 5; i++ {
-			newFragment(ecs, transform.WorldPosition(entry))
+		for i := 0; i < 10; i++ {
+			newFragment(ecs, transform.WorldPosition(entry), FragmentTypeLarge)
 		}
 
 		// play sound

@@ -19,6 +19,18 @@ const (
 	// BlockSpeed is the speed of the block.
 	BlockSpeed = 0.7
 
+	// BlockColumnNum is the number of columns of the block.
+	BlockColumnNum = 7
+
+	// Margin is the gap of the edge.
+	Margin = (Width - BlockWidth*BlockColumnNum) / 2
+
+	// MaxX is the maximum x position of the player.
+	MaxX = Width - BlockWidth/2
+
+	// MinX is the minimum x position of the player.
+	MinX = BlockWidth / 2
+
 	// Gravity is the gravity of the game.
 	Gravity = 0.05
 

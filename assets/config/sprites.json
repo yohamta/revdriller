@@ -16,6 +16,11 @@
             "h": 200
         },
         {
+            "file": "img/background.png",
+            "w": 240,
+            "h": 480
+        },
+        {
             "file": "img/blocks_32x32.png",
             "w": 32,
             "h": 32
@@ -31,12 +36,22 @@
             "h": 24
         },
         {
+            "file": "img/fragments_small.png",
+            "w": 8,
+            "h": 8
+        },
+        {
             "file": "img/items.png",
             "w": 32,
-            "h": 32 
+            "h": 32
         }
     ],
     "animations": [
+        {
+            "name": "background",
+            "file": "img/background.png",
+            "frames": ["1", "1"]
+        },
         {
             "name": "player1_idle",
             "file": "img/player.png",
@@ -125,22 +140,62 @@
         {
             "name": "fragment_1",
             "file": "img/fragments.png",
-            "frames" : ["1", "1"]
+            "frames": ["1", "1"]
         },
         {
             "name": "fragment_2",
             "file": "img/fragments.png",
-            "frames" : ["2", "1"]
+            "frames": ["2", "1"]
         },
         {
             "name": "fragment_3",
             "file": "img/fragments.png",
-            "frames" : ["3", "1"]
+            "frames": ["3", "1"]
         },
         {
             "name": "fragment_4",
             "file": "img/fragments.png",
-            "frames" : ["4", "1"]
+            "frames": ["4", "1"]
+        },
+        {
+            "name": "fragment_s_1",
+            "file": "img/fragments_small.png",
+            "frames": ["1", "1"]
+        },
+        {
+            "name": "fragment_s_2",
+            "file": "img/fragments_small.png",
+            "frames": ["2", "1"]
+        },
+        {
+            "name": "fragment_s_3",
+            "file": "img/fragments_small.png",
+            "frames": ["3", "1"]
+        },
+        {
+            "name": "fragment_s_4",
+            "file": "img/fragments_small.png",
+            "frames": ["4", "1"]
+        },
+        {
+            "name": "fragment_s_5",
+            "file": "img/fragments_small.png",
+            "frames": ["5", "1"]
+        },
+        {
+            "name": "fragment_s_6",
+            "file": "img/fragments_small.png",
+            "frames": ["6", "1"]
+        },
+        {
+            "name": "fragment_s_7",
+            "file": "img/fragments_small.png",
+            "frames": ["7", "1"]
+        },
+        {
+            "name": "fragment_s_8",
+            "file": "img/fragments_small.png",
+            "frames": ["8", "1"]
         }
     ]
 }

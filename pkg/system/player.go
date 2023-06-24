@@ -105,7 +105,9 @@ func updatePlayer(ecs *ecs.ECS) {
 		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X-size.X/2, pos.Y)); ok {
 			bp := transform.WorldPosition(block)
 			bs := components.Size.Get(block)
-			pos.X = bp.X + bs.X/2 + size.X/2
+			if bp.X+bs.X/2 < consts.MaxX-size.X/2 {
+				pos.X = bp.X + bs.X/2 + size.X/2
+			}
 		}
 	}
 
@@ -117,7 +119,9 @@ func updatePlayer(ecs *ecs.ECS) {
 		if block, ok := findBlockOn(ecs, dmath.NewVec2(pos.X+size.X/2, pos.Y)); ok {
 			bp := transform.WorldPosition(block)
 			bs := components.Size.Get(block)
-			pos.X = bp.X - bs.X/2 - size.X/2
+			if bp.X-bs.X/2 > consts.MinX+size.X/2 {
+				pos.X = bp.X - bs.X/2 - size.X/2
+			}
 		}
 	}
 
@@ -176,5 +180,13 @@ func onCollideWithBlock(w donburi.World, e events.CollideWithDrill) {
 		// update block animation
 		animation := components.Animation.Get(e.Block)
 		animation.Animation = block.Animation()
+
+		// spawn fragments
+		if block.IsBreakable() && !block.IsItem() {
+			size := components.Size.Get(entry)
+			pos := transform.WorldPosition(entry)
+			drillPos := dmath.NewVec2(pos.X, pos.Y-size.Y/2-1)
+			newFragment(e.ECS, drillPos, FragmentTypeSmall)
+		}
 	}
 }

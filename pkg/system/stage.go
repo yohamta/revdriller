@@ -24,8 +24,7 @@ func newStage(ecs *ecs.ECS, level int) {
 	stage.BlockSpeed = consts.BlockSpeed + float64(level)/10
 	stage.BaseLine = 0.0
 	stage.WaveCount = 30 + level*5
-	stage.ColumnCount = consts.Width / consts.BlockWidth
-	stage.PathColumn = rand.Intn(stage.ColumnCount) + 1
+	stage.PathColumn = rand.Intn(consts.BlockColumnNum) + 1
 }
 
 func getStage(ecs *ecs.ECS) *components.StageData {
@@ -35,13 +34,13 @@ func getStage(ecs *ecs.ECS) *components.StageData {
 func generateWave(ecs *ecs.ECS, stage *components.StageData, y float64) {
 	path := stage.PathColumn
 	nextPath := path + rand.Intn(3) - 1
-	nextPath = int(math.Min(math.Max(float64(nextPath), 1), float64(stage.ColumnCount)))
+	nextPath = int(math.Min(math.Max(float64(nextPath), 1), float64(consts.BlockColumnNum)))
 	shouldReverse := stage.ShouldReverse
 	nextShouldReverse := shouldReverse
-	x := (consts.Width - stage.ColumnCount*consts.BlockWidth) / 2
+	x := consts.Margin
 
 	// TODO: fix this ugly code
-	for i := 0; i < stage.ColumnCount; {
+	for i := 0; i < consts.BlockColumnNum; {
 		var blockType components.BlockType
 
 		switch {
@@ -57,6 +56,10 @@ func generateWave(ecs *ecs.ECS, stage *components.StageData, y float64) {
 			}
 		default:
 			blockType = components.RandomBlockType()
+		}
+
+		if i == consts.BlockColumnNum-1 {
+			blockType = blockType.Shorten()
 		}
 
 		if stage.Reversed {

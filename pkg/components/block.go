@@ -62,11 +62,11 @@ func (b *BlockData) Init(bt BlockType) {
 	b.Type = bt
 	switch bt {
 	case BlockTypeNormal, BlockTypeNormal2:
-		b.MaxDurability = 10
+		b.MaxDurability = 30
 	case BlockTypeObstacle1, BlockTypeObstackle2:
 		b.MaxDurability = -1
 	default:
-		b.MaxDurability = 5
+		b.MaxDurability = 10
 	}
 	b.Durability = b.MaxDurability
 }
@@ -92,6 +92,10 @@ func (b *BlockData) IsBroken() bool {
 
 func (b *BlockData) IsBreakable() bool {
 	return b.MaxDurability >= 0
+}
+
+func (b *BlockData) IsItem() bool {
+	return b.Type == BlockTypeReverse || b.Type == BlockTypeBomb
 }
 
 func (b *BlockData) Width() float64 {

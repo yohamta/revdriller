@@ -15,7 +15,14 @@ import (
 	"github.com/yohamta/donburi/features/transform"
 )
 
-func newFragment(ecs *ecs.ECS, pos dmath.Vec2) {
+type FragmentType int
+
+const (
+	FragmentTypeLarge FragmentType = iota
+	FragmentTypeSmall
+)
+
+func newFragment(ecs *ecs.ECS, pos dmath.Vec2, ft FragmentType) {
 	entry := ecs.World.Entry(ecs.Create(
 		layers.Fx,
 		transform.Transform,
@@ -26,9 +33,15 @@ func newFragment(ecs *ecs.ECS, pos dmath.Vec2) {
 
 	// set fragment's animation
 	animation := components.Animation.Get(entry)
-	animation.Animation = assets.GetAnimation(
-		fmt.Sprintf("fragment_%d", rand.Intn(4)+1),
-	)
+	if ft == FragmentTypeLarge {
+		animation.Animation = assets.GetAnimation(
+			fmt.Sprintf("fragment_%d", rand.Intn(4)+1),
+		)
+	} else {
+		animation.Animation = assets.GetAnimation(
+			fmt.Sprintf("fragment_s_%d", rand.Intn(8)+1),
+		)
+	}
 
 	// set fragment's position
 	transform.SetWorldPosition(entry, pos)

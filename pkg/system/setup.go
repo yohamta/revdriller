@@ -22,6 +22,7 @@ func Setup(ecs *ecs.ECS) {
 	ecs.AddSystem(processEvents)
 
 	// Add renderers.
+	ecs.AddRenderer(layers.Background, drawAnimation(layers.Background))
 	ecs.AddRenderer(layers.Blocks, drawAnimation(layers.Blocks))
 	ecs.AddRenderer(layers.Player, drawAnimation(layers.Player))
 	ecs.AddRenderer(layers.Fx, drawAnimation(layers.Fx))
@@ -31,6 +32,7 @@ func Setup(ecs *ecs.ECS) {
 
 	// Add entities.
 	newGame(ecs)
+	newBackground(ecs)
 	newStage(ecs, 1)
 	newReverse(ecs)
 	newInput(ecs)
