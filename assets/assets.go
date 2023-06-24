@@ -15,15 +15,18 @@ func Load() error {
 	loadSprites(sprites)
 	loadAnimations(sprites)
 
-	// load hitboxes
+	// Load hitbox config.
 	hitboxes := &hitboxConfig{}
 	mustReadJSON("config/hitboxes.json", hitboxes)
 	loadHitboxes(hitboxes)
 
+	// Load sounds.
+	loadSounds()
+
 	return nil
 }
 
-//go:embed img/*.png config/*.json
+//go:embed img/*.png config/*.json sounds/*.mp3 sounds/*.wav
 var fs embed.FS
 
 func mustRead(name string) []byte {

@@ -23,7 +23,7 @@ func newStage(ecs *ecs.ECS, level int) {
 	stage.Level = level
 	stage.BlockSpeed = consts.BlockSpeed + float64(level)/10
 	stage.BaseLine = 0.0
-	stage.WaveCount = 30
+	stage.WaveCount = 30 + level*5
 	stage.ColumnCount = consts.Width / consts.BlockWidth
 	stage.PathColumn = rand.Intn(stage.ColumnCount) + 1
 }

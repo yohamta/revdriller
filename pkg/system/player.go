@@ -2,6 +2,7 @@ package system
 
 import (
 	"math"
+	"revdriller/assets"
 	"revdriller/pkg/components"
 	"revdriller/pkg/consts"
 	"revdriller/pkg/events"
@@ -168,6 +169,9 @@ func onCollideWithBlock(w donburi.World, e events.CollideWithDrill) {
 		// add damage to block
 		block := components.Block.Get(e.Block)
 		block.Damage(player.Power)
+
+		// play sound
+		assets.PlaySE(assets.SEAttack)
 
 		// update block animation
 		animation := components.Animation.Get(e.Block)

@@ -14,6 +14,8 @@ import (
 
 func StartGame(ecs *ecs.ECS) {
 	getGame(ecs).IsGameStart = true
+
+	assets.PlayBGM(assets.BGMMain)
 }
 
 func newGame(ecs *ecs.ECS) {

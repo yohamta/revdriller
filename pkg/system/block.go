@@ -2,6 +2,7 @@ package system
 
 import (
 	"math"
+	"revdriller/assets"
 	"revdriller/pkg/collision"
 	"revdriller/pkg/components"
 	"revdriller/pkg/consts"
@@ -124,6 +125,9 @@ func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 		for i := 0; i < 5; i++ {
 			newFragment(ecs, transform.WorldPosition(entry))
 		}
+
+		// play sound
+		assets.PlaySE(assets.SEBreak)
 
 		// publish reverse block broken event
 		switch block.Type {
