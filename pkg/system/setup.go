@@ -39,6 +39,8 @@ func Setup(ecs *ecs.ECS) {
 	// Subscribe events.
 	pkgevents.CollideWithDrillEvent.Subscribe(ecs.World, onCollideWithBlock)
 	pkgevents.ReverseBlockBrokenEvent.Subscribe(ecs.World, reverseBlocks)
+	pkgevents.ReverseBlockBrokenEvent.Subscribe(ecs.World, onReversed)
+	pkgevents.BombBlockBrokenEvent.Subscribe(ecs.World, bombBlock)
 }
 
 func processEvents(ecs *ecs.ECS) {

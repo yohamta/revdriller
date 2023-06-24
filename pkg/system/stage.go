@@ -1,10 +1,14 @@
 package system
 
 import (
+	"math"
+	"math/rand"
 	"revdriller/pkg/components"
 	"revdriller/pkg/consts"
+	"revdriller/pkg/events"
 	"revdriller/pkg/layers"
 
+	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
 	dmath "github.com/yohamta/donburi/features/math"
 )
@@ -17,10 +21,11 @@ func newStage(ecs *ecs.ECS, level int) {
 
 	stage := components.Stage.Get(entry)
 	stage.Level = level
-	stage.BlockSpeed = 1 + float64(level)/10
-	stage.BlockInterval = consts.BlockInterval
+	stage.BlockSpeed = consts.BlockSpeed + float64(level)/10
 	stage.BaseLine = 0.0
 	stage.WaveCount = 30
+	stage.ColumnCount = consts.Width / consts.BlockWidth
+	stage.PathColumn = rand.Intn(stage.ColumnCount) + 1
 }
 
 func getStage(ecs *ecs.ECS) *components.StageData {
@@ -28,13 +33,54 @@ func getStage(ecs *ecs.ECS) *components.StageData {
 }
 
 func generateWave(ecs *ecs.ECS, stage *components.StageData, y float64) {
-	x := -consts.BlockWidth / 2
-	for x < consts.Width+consts.BlockWidth/2 {
+	path := stage.PathColumn
+	nextPath := path + rand.Intn(3) - 1
+	nextPath = int(math.Min(math.Max(float64(nextPath), 1), float64(stage.ColumnCount)))
+	shouldReverse := stage.ShouldReverse
+	nextShouldReverse := shouldReverse
+	x := (consts.Width - stage.ColumnCount*consts.BlockWidth) / 2
+
+	// TODO: fix this ugly code
+	for i := 0; i < stage.ColumnCount; {
+		var blockType components.BlockType
+
+		switch {
+		case i == nextPath-1:
+			blockType = components.BlockTypeNormal2
+			if shouldReverse {
+				blockType = blockType.Reverse()
+			}
+		case i == path-1 && i == nextPath:
+			blockType = components.BlockTypeNormal2
+			if shouldReverse {
+				blockType = blockType.Reverse()
+			}
+		default:
+			blockType = components.RandomBlockType()
+		}
+
+		if stage.Reversed {
+			blockType = blockType.Reverse()
+		}
+
+		if i == path && rand.Float64() < .2 {
+			blockType = components.BlockTypeReverse
+			nextShouldReverse = !shouldReverse
+		}
+
+		if math.Abs(float64(i)-float64(nextPath)) < 2 && rand.Float64() < .3 {
+			blockType = components.BlockTypeBomb
+		}
+
 		block := newBlock(ecs, dmath.NewVec2(float64(x), y),
-			components.RandomBlockType(), stage.BlockSpeed)
+			blockType, stage.BlockSpeed)
 		size := components.Size.Get(block)
 		x += int(size.X)
+		i += int(size.X) / consts.BlockWidth
 	}
+
+	stage.PathColumn = nextPath
+	stage.ShouldReverse = nextShouldReverse
 }
 
 func updateStage(ecs *ecs.ECS) {
@@ -50,4 +96,9 @@ func updateStage(ecs *ecs.ECS) {
 			generateWave(ecs, stage, stage.BaseLine)
 		}
 	}
+}
+
+func onReversed(w donburi.World, e events.ReverseBlockBroken) {
+	stage := getStage(e.ECS)
+	stage.Reversed = !stage.Reversed
 }

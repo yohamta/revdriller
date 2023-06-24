@@ -4,6 +4,7 @@ import (
 	"math"
 	"revdriller/pkg/collision"
 	"revdriller/pkg/components"
+	"revdriller/pkg/consts"
 	"revdriller/pkg/events"
 	"revdriller/pkg/layers"
 
@@ -98,6 +99,23 @@ func findBlockOn(ecs *ecs.ECS, point dmath.Vec2) (*donburi.Entry, bool) {
 	return found, found != nil
 }
 
+func bombBlock(w donburi.World, e events.BombBlockBroken) {
+	// remove blocks around the point
+	for i := 0; i < 5; i++ {
+		x := e.Point.X - 2*consts.BlockWidth + float64(i)*consts.BlockWidth
+		for j := 0; j < 5; j++ {
+			y := e.Point.Y - 2*consts.BlockHeight + float64(j)*consts.BlockHeight
+			// TODO: make it more efficient
+			components.Block.Each(w, func(entry *donburi.Entry) {
+				if collision.Contain(newCollider(entry), dmath.NewVec2(x, y)) {
+					block := components.Block.Get(entry)
+					block.ForceBreak()
+				}
+			})
+		}
+	}
+}
+
 // removeBlock removes block from ecs
 func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 	block := components.Block.Get(entry)
@@ -108,8 +126,15 @@ func removeBlock(ecs *ecs.ECS, entry *donburi.Entry) {
 		}
 
 		// publish reverse block broken event
-		if block.Type == components.BlockTypeReverse {
-			events.ReverseBlockBrokenEvent.Publish(ecs.World, events.ReverseBlockBroken{ECS: ecs})
+		switch block.Type {
+		case components.BlockTypeReverse:
+			if !block.Invalidated {
+				events.ReverseBlockBrokenEvent.Publish(ecs.World, events.ReverseBlockBroken{ECS: ecs})
+			}
+		case components.BlockTypeBomb:
+			events.BombBlockBrokenEvent.Publish(ecs.World, events.BombBlockBroken{
+				ECS: ecs, Point: transform.WorldPosition(entry),
+			})
 		}
 	}
 

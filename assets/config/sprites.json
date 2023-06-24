@@ -29,6 +29,11 @@
             "file": "img/fragments.png",
             "w": 24,
             "h": 24
+        },
+        {
+            "file": "img/items.png",
+            "w": 32,
+            "h": 32 
         }
     ],
     "animations": [
@@ -46,6 +51,11 @@
             "name": "needle",
             "file": "img/blocks_32x32.png",
             "frames": ["1-4", "2"]
+        },
+        {
+            "name": "bomb",
+            "file": "img/items.png",
+            "frames": ["1-5", "1"]
         },
         {
             "name": "block1_1",
@@ -103,24 +113,14 @@
             "frames": ["1", "2"]
         },
         {
-            "name": "reverse_1",
+            "name": "reverse",
             "file": "img/blocks_32x32.png",
             "frames": ["1", "4"]
         },
         {
-            "name": "reverse_2",
-            "file": "img/blocks_32x32.png",
-            "frames": ["1", "4"]
-        },
-        {
-            "name": "reverse_3",
-            "file": "img/blocks_32x32.png",
-            "frames": ["1", "4"]
-        },
-        {
-            "name": "reverse_4",
-            "file": "img/blocks_32x32.png",
-            "frames": ["1", "4"]
+            "name": "bomb",
+            "file": "img/items.png",
+            "frames": ["1-5", "1"]
         },
         {
             "name": "fragment_1",

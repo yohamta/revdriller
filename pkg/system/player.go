@@ -69,7 +69,7 @@ func updatePlayer(ecs *ecs.ECS) {
 
 	// check player's key input
 	input := getInput(ecs)
-	if input.ButtonA || input.Down {
+	if input.ButtonA || input.Down || input.Up {
 		vel.Y = -consts.PlayerJumpSpeed
 		updatePlayerState(entry, components.PlayerStateDrill)
 	} else {

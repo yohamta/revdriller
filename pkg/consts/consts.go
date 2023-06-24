@@ -8,7 +8,7 @@ import (
 const (
 	// Width and Height are the width and height of the screen.
 	Width  = 240
-	Height = 320
+	Height = 480
 
 	// BlockWidth is the width of the block.
 	BlockWidth = 32
@@ -16,8 +16,8 @@ const (
 	// BlockHeight is the height of the block.
 	BlockHeight = 32
 
-	// BlockInterval is the interval of the block.
-	BlockInterval = time.Millisecond * 1200
+	// BlockSpeed is the speed of the block.
+	BlockSpeed = 0.7
 
 	// Gravity is the gravity of the game.
 	Gravity = 0.05

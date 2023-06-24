@@ -9,10 +9,13 @@ import (
 type StageData struct {
 	Level         int
 	BlockSpeed    float64
-	BlockInterval time.Duration
 	Timer         time.Duration
 	BaseLine      float64
 	WaveCount     int
+	ColumnCount   int
+	PathColumn    int
+	ShouldReverse bool
+	Reversed      bool
 }
 
 var Stage = donburi.NewComponentType[StageData]()
