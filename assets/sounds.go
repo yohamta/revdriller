@@ -46,7 +46,7 @@ const sampleRate = 22050
 func loadSounds() {
 	audioContext = audio.NewContext(sampleRate)
 
-	bgms[BGMMain] = loadMP3(audioContext, "sounds/GJ_ChikenCrazy.mp3")
+	bgms[BGMMain] = loadMP3(audioContext, "sounds/enchanted tiki 86.mp3")
 	ses[SEAttack] = loadWav(audioContext, "sounds/se_attack.wav")
 	ses[SEBreak] = loadWav(audioContext, "sounds/se_break.wav")
 }

@@ -16,4 +16,4 @@ You can't destroy the metal blocks, but when you smash the Reverse item, the spe
 
 ## Credits
 
-BGM: GJ_ChikenCrazy by [Dryoma](https://dryoma.itch.io/musicpack-freeopened)
+BGM: [enchanted tiki 86](https://opengameart.org/content/enchanted-tiki-86)
