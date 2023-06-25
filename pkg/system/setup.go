@@ -1,6 +1,7 @@
 package system
 
 import (
+	"revdriller/pkg/components"
 	"revdriller/pkg/layers"
 
 	"github.com/yohamta/donburi/ecs"
@@ -9,7 +10,7 @@ import (
 	pkgevents "revdriller/pkg/events"
 )
 
-func Setup(ecs *ecs.ECS, stage, life, score int) {
+func Setup(ecs *ecs.ECS, game components.GameData) {
 	// Add systems.
 	ecs.AddSystem(updateInput)
 	ecs.AddSystem(updateAnimation)
@@ -31,9 +32,9 @@ func Setup(ecs *ecs.ECS, stage, life, score int) {
 	ecs.AddRenderer(layers.System, drawGame)
 
 	// Add entities.
-	newGame(ecs, stage, life, score)
+	newGame(ecs, game)
 	newBackground(ecs)
-	newStage(ecs, stage)
+	newStage(ecs, game.Stage)
 	newReverse(ecs)
 	newInput(ecs)
 	newPlayer(ecs)

@@ -25,6 +25,9 @@ const (
 	// Life is the number of life of the player.
 	Life = 3
 
+	// HighScoreNum is the number of high score.
+	HighScoreNum = 3
+
 	// Margin is the gap of the edge.
 	Margin = (Width - BlockWidth*BlockColumnNum) / 2
 
@@ -51,6 +54,12 @@ const (
 
 	// DebugCollision is the flag to enable collision debug.
 	DebugCollision = false
+
+	// LargeNumberSprite is the sprite of the large number.
+	LargeNumberSprite = "img/numbers.png"
+
+	// SmallNumberSprite is the sprite of the small number.
+	SmallNumberSprite = "img/numbers_small.png"
 )
 
 var (

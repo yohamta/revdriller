@@ -62,7 +62,7 @@
         },
         {
             "file": "img/numbers_small.png",
-            "w": 10,
+            "w": 12,
             "h": 26
         },
         {
@@ -74,6 +74,11 @@
             "file": "img/highscore.png",
             "w": 120,
             "h": 28
+        },
+        {
+            "file": "img/highscore_position.png",
+            "w": 50,
+            "h": 26
         }
     ],
     "animations": [

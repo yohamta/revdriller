@@ -11,6 +11,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
+	"golang.org/x/exp/slices"
 )
 
 type game struct {
@@ -20,6 +21,7 @@ type game struct {
 	score          int
 	stage          int
 	life           int
+	highscores     []int
 }
 
 var (
@@ -40,11 +42,12 @@ const (
 
 func New() *game {
 	return &game{
-		state: stateInit,
-		stage: 1,
-		score: 0,
-		life:  consts.Life,
-		ecs:   ecs.NewECS(donburi.NewWorld()),
+		state:      stateInit,
+		stage:      1,
+		score:      0,
+		life:       consts.Life,
+		ecs:        ecs.NewECS(donburi.NewWorld()),
+		highscores: []int{300, 200, 100},
 	}
 }
 
@@ -84,11 +87,10 @@ func (g *game) Update() error {
 		}
 	case statePlaying:
 		g.ecs.Update()
-		if g.checkGameOver() {
-			g.changeState(stateGameover)
-		}
-		if g.checkGameClear() {
+		if system.IsGameClear(g.ecs) {
 			g.changeState(stateGameclear)
+		} else if system.IsGameOver(g.ecs) {
+			g.changeState(stateGameover)
 		}
 	case stateGameclear, stateGameover:
 		if g.checkRestart() {
@@ -111,11 +113,13 @@ func (g *game) changeState(state state) {
 	switch state {
 	case stateStart:
 	case stateGameclear:
-		g.score += components.Game.Get(components.Game.MustFirst(g.ecs.World)).AddScore
+		g.score += system.GetScore(g.ecs)
 		g.stage++
 	case stateGameover:
+		g.score += system.GetScore(g.ecs)
 		g.life--
 		if g.life <= 0 {
+			g.updateHighScore()
 			g.reset()
 		}
 	}
@@ -130,6 +134,16 @@ func (g *game) reset() {
 	g.score = 0
 }
 
+func (g *game) updateHighScore() {
+	g.highscores = append(g.highscores, g.score)
+	slices.SortFunc(g.highscores, func(a, b int) bool {
+		return a > b
+	})
+	if len(g.highscores) > consts.HighScoreNum {
+		g.highscores = g.highscores[:consts.HighScoreNum]
+	}
+}
+
 func (g *game) checkStart() bool {
 	return ebiten.IsKeyPressed(ebiten.KeySpace) || ebiten.IsKeyPressed(ebiten.KeyEnter) || ebiten.IsKeyPressed(ebiten.KeyZ)
 }
@@ -141,24 +155,18 @@ func (g *game) checkRestart() bool {
 	return ebiten.IsKeyPressed(ebiten.KeySpace) || ebiten.IsKeyPressed(ebiten.KeyEnter) || ebiten.IsKeyPressed(ebiten.KeyZ)
 }
 
-// checkGameOver checks if the game is over.
-func (g *game) checkGameOver() bool {
-	game := components.Game.MustFirst(g.ecs.World)
-	return components.Game.Get(game).IsDead
-}
-
-func (g *game) checkGameClear() bool {
-	game := components.Game.MustFirst(g.ecs.World)
-	return components.Game.Get(game).IsClear
-}
-
 // initStage initializes the stage.
 func (g *game) initStage() {
 	// Create a new ECS world.
 	g.ecs = ecs.NewECS(donburi.NewWorld())
 
 	// Setup systems.
-	system.Setup(g.ecs, g.stage, g.life, g.score)
+	system.Setup(g.ecs, components.GameData{
+		Life:       g.life,
+		Stage:      g.stage,
+		Score:      g.score,
+		HighScores: g.highscores,
+	})
 
 	// Start the game.
 	g.changeState(stateStart)

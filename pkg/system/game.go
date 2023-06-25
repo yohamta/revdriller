@@ -13,25 +13,37 @@ import (
 )
 
 func StartGame(ecs *ecs.ECS) {
-	getGame(ecs).IsGameStart = true
+	getGame(ecs).State = components.GameStatePlay
 
 	assets.PlayBGM(assets.BGMMain)
 }
 
-func newGame(ecs *ecs.ECS, stage, life, score int) {
+func GetScore(ecs *ecs.ECS) int {
+	return getGame(ecs).AddScore
+}
+
+func IsGameOver(ecs *ecs.ECS) bool {
+	return getGame(ecs).State == components.GameStateGameOver
+}
+
+func IsGameClear(ecs *ecs.ECS) bool {
+	return getGame(ecs).State == components.GameStateClear
+}
+
+func newGame(ecs *ecs.ECS, game components.GameData) {
 	_ = ecs.World.Entry(ecs.Create(
 		layers.System,
 		components.Game,
 	))
 
-	game := getGame(ecs)
-	game.Stage = stage
-	game.Life = life
-	game.Score = score
+	components.Game.SetValue(
+		components.Game.MustFirst(ecs.World),
+		game,
+	)
 }
 
 func isGameStarted(ecs *ecs.ECS) bool {
-	return getGame(ecs).IsGameStart
+	return getGame(ecs).State == components.GameStatePlay
 }
 
 func getGame(ecs *ecs.ECS) *components.GameData {
@@ -44,13 +56,13 @@ func updateGame(ecs *ecs.ECS) {
 	playerEntry, ok := components.Player.First(ecs.World)
 	if ok {
 		if components.Player.Get(playerEntry).IsDead {
-			getGame(ecs).IsDead = true
+			getGame(ecs).State = components.GameStateGameOver
 		}
 		playerPos := transform.WorldPosition(playerEntry)
 		playerSize := components.Size.Get(playerEntry)
 
 		if playerPos.Y+playerSize.Y/2 < 0 {
-			getGame(ecs).IsClear = true
+			getGame(ecs).State = components.GameStateClear
 		}
 	}
 }
@@ -58,24 +70,35 @@ func updateGame(ecs *ecs.ECS) {
 func drawGame(ecs *ecs.ECS, screen *ebiten.Image) {
 	game := getGame(ecs)
 
-	// TODO: refactor these codes
-
-	// if the game is not started, draw title or stage screen.
-	if !game.IsGameStart {
+	switch game.State {
+	case components.GameStateTitle:
 		if game.IsFirstPlay() {
+			// draw title
 			ganim8.DrawSprite(screen, assets.GetSprite("img/title.png"), 0, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
+			// draw high scores
+			for i, score := range game.HighScores {
+				line := float64(consts.Height/2 + 110 + i*30)
+				ganim8.DrawSprite(screen, assets.GetSprite("img/highscore_position.png"), i, 20, line, 0, 1, 1, .0, .0)
+				drawNumberR(screen, score, consts.Width-22, line, assets.GetSprite(consts.SmallNumberSprite))
+			}
 		} else {
-			ganim8.DrawSprite(screen, assets.GetSprite("img/stage.png"), 0, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
 			// draw stage number
-			drawNumberL(screen, game.Stage, consts.Width/2+50, consts.Height/2-85, assets.GetSprite("img/numbers.png"))
+			ganim8.DrawSprite(screen, assets.GetSprite("img/stage.png"), 0, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
+			drawNumberL(screen, game.Stage, consts.Width/2+50, consts.Height/2-85, assets.GetSprite(consts.LargeNumberSprite))
 			// draw life
-			drawNumberL(screen, game.Life, consts.Width/2+80, consts.Height/2-29, assets.GetSprite("img/numbers.png"))
+			drawNumberL(screen, game.Life, consts.Width/2+80, consts.Height/2-29, assets.GetSprite(consts.LargeNumberSprite))
+			// draw score
+			drawNumberR(screen, game.TotalScore(), consts.Width-20, 10, assets.GetSprite(consts.SmallNumberSprite))
 		}
-	}
-
-	// if the player is dead, draw lose or game over.
-	if game.IsDead {
+	case components.GameStatePlay:
+		// draw score
+		drawNumberR(screen, game.TotalScore(), consts.Width-20, 10, assets.GetSprite(consts.SmallNumberSprite))
+	case components.GameStateClear:
+		// draw stage clear
+		ganim8.DrawSprite(screen, assets.GetSprite("img/messages.png"), 1, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
+	case components.GameStateGameOver:
 		if game.Life > 1 {
+			// draw continue
 			ganim8.DrawSprite(screen, assets.GetSprite("img/messages.png"), 0, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
 		} else {
 			// Gameover
@@ -83,15 +106,7 @@ func drawGame(ecs *ecs.ECS, screen *ebiten.Image) {
 			// draw high score
 			ganim8.DrawSprite(screen, assets.GetSprite("img/highscore.png"), 0, 20, consts.Height/2-10, 0, 1, 1, .0, .5)
 			// draw score
-			drawNumberR(screen, game.Score, consts.Width-20, consts.Height/2+25, assets.GetSprite("img/numbers.png"))
+			drawNumberR(screen, game.TotalScore(), consts.Width-20, consts.Height/2+25, assets.GetSprite(consts.LargeNumberSprite))
 		}
-	} else if game.IsClear {
-		// if the game is clear, draw game clear.
-		ganim8.DrawSprite(screen, assets.GetSprite("img/messages.png"), 1, consts.Width/2, consts.Height/2, 0, 1, 1, .5, .5)
-	}
-
-	if (game.IsGameStart || game.IsClear) && !(game.IsDead && game.Life == 1) {
-		// draw score
-		drawNumberR(screen, game.Score+game.AddScore, consts.Width-20, 10, assets.GetSprite("img/numbers_small.png"))
 	}
 }
